@@ -10,7 +10,7 @@
 (setq visible-bell t) ; Enables the visible bell
 
 ;; Sets the font. Height is a percentage
-(set-face-attribute 'default nil :font "Hack" :height 100)
+(set-face-attribute 'default nil :font "Hack Nerd Font" :height 100)
 
 (load-theme 'tango)
 
