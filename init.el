@@ -8,7 +8,7 @@
 (tooltip-mode -1)    ; Disables tooltips
 (set-fringe-mode 10) ; Gives some breathing room
 
-(setq visible-bell t) ; Enables the visible bell
+(setq visible-bell nil) ; Disables the visible bell
 
 ;; Sets the font. Height is a percentage
 ;(set-face-attribute 'default nil :font "Hack" :height 100)
@@ -115,6 +115,7 @@
     "be" '(eval-buffer :which-key "eval buffer")
     "bn" '(centaur-tabs-forward :which-key "next buffer")
     "bp" '(centaur-tabs-backward :which-key "previous buffer")
+    "bN" '(centaur-tabs-counsel-switch-group :which-key "next group")
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
@@ -221,10 +222,31 @@
   :demand
   :config
   (centaur-tabs-mode t)
-  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-style "rounded")
+  (setq centaur-tabs-height 40)
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-plain-icons nil)
+  (setq centaur-tabs-gray-out-icons 'buffer)
+  (setq centaur-tabs-set-bar 'under)
+  (setq x-underline-at-descent-line t)
+  (setq centaur-tabs-set-close-button t)
+  (setq centaur-tabs-set-modified-marker t)
+  (setq centaur-tabs-adjust-buffer-order t)
+  (setq centaur-tabs-label-fixed-length 8) ; 0 is dynamic
+  (centaur-tabs-headline-match)
+  (centaur-tabs-change-fonts "JetBrains Mono" 100)
+  (centaur-tabs-enable-buffer-reordering)
+  (centaur-tabs-mode t)
+  :init
+  (setq centaur-tabs-enable-key-bindings t)
   :bind
+  ;; Vim-like tab changing
+  (:map evil-normal-state-map
+	("g t" . centaur-tabs-forward)
+	("g T" . centaur-tabs-backward))
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward))
+
 
 ;;; Clojure
 (use-package clojure-mode)
