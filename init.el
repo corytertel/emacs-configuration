@@ -12,18 +12,29 @@
 
 ;; Sets the font. Height is a percentage
 ;(set-face-attribute 'default nil :font "Hack" :height 100)
+;; (set-face-attribute 'default nil
+;; 		    :family "Roboto Mono" :weight 'light :height 100)
+;; (set-face-attribute 'bold nil
+;; 		    :family "Roboto Mono" :weight 'regular)
+;; (set-face-attribute 'italic nil
+;; 		    :family "Victor Mono" :weight 'semilight :slant 'italic :height 90)
+;; (set-fontset-font t 'unicode
+;; 		  (font-spec :name "RobotoMono Nerd Font" :size 16) nil)
+;; (set-fontset-font t '(#xe000 . #xffdd)
+;; 		  (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
 (set-face-attribute 'default nil
-		    :family "Roboto Mono" :weight 'light :height 140)
+		    :family "JetBrains Mono" :weight 'light :height 100)
 (set-face-attribute 'bold nil
-		    :family "Roboto Mono" :weight 'regular)
+		    :family "JetBrains Mono" :weight 'regular)
 (set-face-attribute 'italic nil
-		    :family "Victor Mono" :weight 'semilight :slant 'italic)
+		    :family "Victor Mono" :weight 'semilight :slant 'italic :height 90)
 (set-fontset-font t 'unicode
-		  (font-spec :name "RobotoMono Nerd Font" :size 16) nil)
+		  (font-spec :name "JetBrainsMono NF" :size 16) nil)
 (set-fontset-font t '(#xe000 . #xffdd)
-		  (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
+		  (font-spec :name "JetBrainsMono NF" :size 12) nil)
 
 (load-theme 'tango)
+;;(load-theme 'nord t)
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -34,6 +45,8 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
 
 (package-initialize)
 (unless package-archive-contents
@@ -98,7 +111,10 @@
     ;; Buffers
     "b"  '(:ignore t :which-key "buffers")
     "bb" '(counsel-switch-buffer :which-key "switch buffer")
+    "bd" '(kill-buffer :which-key "kill-buffer")
     "be" '(eval-buffer :which-key "eval buffer")
+    "bn" '(centaur-tabs-forward :which-key "next buffer")
+    "bp" '(centaur-tabs-backward :which-key "previous buffer")
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
@@ -106,7 +122,7 @@
 
     ;; Git
     "g"  '(:ignore t :which-key "git")
-    
+
     ;; Toggles
    "t"  '(:ignore t :which-key "toggles")
    "ts" '(hydra-text-scale/body :which-key ":scale-text")
@@ -116,12 +132,7 @@
 (defun cory/evil-hook ()
   (dolist (mode '(custom-mode
 		  eshell-mode
-		  git-rebase-mode
-		  erc-mode
-		  circe-server-mode
-		  circe-chat-mode
-		  circe-query-mode
-		  sauron-mode
+		  special-mode
 		  term-mode))
     (add-to-list 'evil-emacs-state-modes mode)))
 
@@ -145,10 +156,15 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
-(use-package evil-collection
-  :after evil
-  :config
+;; (use-package evil-collection
+;;   :after evil
+;;   :ensure t
+;;   :config
+;;   (evil-collection-init))
+(when (require 'evil-collection nil t)
   (evil-collection-init))
+
+(evil-mode)
 
 ;(use-package undo-tree)
 ;(global-undo-tree-mode)
@@ -167,7 +183,7 @@
   :init (which-key-mode)
   :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0.3))
+  (setq which-key-idle-delay 0.0))
 
 (use-package ivy-rich
   :init
@@ -193,6 +209,14 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+(use-package hydra)
+
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
 (use-package centaur-tabs
   :demand
   :config
@@ -202,25 +226,88 @@
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward))
 
-(use-package hydra)
+;;; Clojure
+(use-package clojure-mode)
+(use-package lsp-mode)
+(use-package cider)
+(use-package lsp-treemacs)
+(use-package company)
+(use-package flycheck
+  :init
+  (progn
+    (define-fringe-bitmap 'my-flycheck-fringe-indicator
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00011100
+              #b00111110
+              #b00111110
+              #b00111110
+              #b00011100
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
 
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-error)
+
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-warning)
+
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-info)))
+
+(add-hook 'clojure-mode-hook 'lsp)
+(add-hook 'clojurescript-mode-hook 'lsp)
+(add-hook 'clojurec-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-minimum-prefix-length 1
+      lsp-lens-enable t
+      lsp-signature-auto-activate nil
+      ;; lsp-enable-indentation nil ; uncomment to use cider identation instead of lsp
+      ;; lsp-enable-completion-at-point-nil ; uncomment to use cider completion instead of lsp
+      )
+
+;; Define keybindings just for clojure-mode
+;;(define-key clojure-mode-map (kbd "SPC cc") 'cider-jack-in)
+
+;;; C++
+;(use-package modern-cpp-font-lock
+;  :ensure t)
+;(modern-c++-font-lock-global-mode t)
+;(use-package cpp-auto-include)
+
+;;; Other Modes
+(use-package haskell-mode)
+(use-package nix-mode)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline sucess warning error])
- '(global-command-log-mode t)
- '(ivy-mode t)
+ '(custom-safe-themes
+   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
  '(package-selected-packages
-   '(undo-tree undo-fu evil-collection evil general ivy-rich which-key rainbow-delimiters counsel swiper use-package ivy doom-modeline command-log-mode)))
+   '(nix-mode haskell-mode company flycheck lsp-treemacs cider lsp-mode clojure-mode undo-tree evil-collection which-key use-package rainbow-delimiters ivy-rich hydra helpful general evil doom-modeline counsel command-log-mode centaur-tabs annalist)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
