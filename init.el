@@ -33,8 +33,10 @@
 (set-fontset-font t '(#xe000 . #xffdd)
 		  (font-spec :name "JetBrainsMono NF" :size 12) nil)
 
-(load-theme 'tango)
-;;(load-theme 'nord t)
+(add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
+
+(load-theme 'vibrant)
+;;(counsel-load-theme 'nord)
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -45,8 +47,6 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
-
-(add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
 
 (package-initialize)
 (unless package-archive-contents
@@ -115,7 +115,7 @@
     "be" '(eval-buffer :which-key "eval buffer")
     "bn" '(centaur-tabs-forward :which-key "next buffer")
     "bp" '(centaur-tabs-backward :which-key "previous buffer")
-    "bN" '(centaur-tabs-counsel-switch-group :which-key "next group")
+    "bN" '(centaur-tabs-counsel-switch-group :which-key "switch group")
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
@@ -222,8 +222,8 @@
   :demand
   :config
   (centaur-tabs-mode t)
-  (setq centaur-tabs-style "rounded")
-  (setq centaur-tabs-height 40)
+  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-height 32)
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-plain-icons nil)
   (setq centaur-tabs-gray-out-icons 'buffer)
@@ -233,6 +233,7 @@
   (setq centaur-tabs-set-modified-marker t)
   (setq centaur-tabs-adjust-buffer-order t)
   (setq centaur-tabs-label-fixed-length 8) ; 0 is dynamic
+  (setq centaur-tabs-cycle-scope 'tabs)
   (centaur-tabs-headline-match)
   (centaur-tabs-change-fonts "JetBrains Mono" 100)
   (centaur-tabs-enable-buffer-reordering)
@@ -255,7 +256,9 @@
 (use-package lsp-treemacs)
 (use-package company)
 (use-package flycheck
+  :ensure t
   :init
+  (global-flycheck-mode t)
   (progn
     (define-fringe-bitmap 'my-flycheck-fringe-indicator
       (vector #b00000000
@@ -312,10 +315,34 @@
 ;;(define-key clojure-mode-map (kbd "SPC cc") 'cider-jack-in)
 
 ;;; C++
-;(use-package modern-cpp-font-lock
-;  :ensure t)
-;(modern-c++-font-lock-global-mode t)
-;(use-package cpp-auto-include)
+(use-package yasnippet)
+(yas-global-mode 1)
+
+(use-package auto-complete
+  :ensure t
+  :init
+  (progn
+    (ac-config-default)
+    (global-auto-complete-mode t)))
+
+(use-package modern-cpp-font-lock
+  :ensure t)
+(modern-c++-font-lock-global-mode t)
+
+(use-package cpp-auto-include)
+
+(defun code-compile ()
+  (interactive)
+  (unless (file-exists-p "Makefile")
+    (set (make-local-variable 'compile-command)
+     (let ((file (file-name-nondirectory buffer-file-name)))
+       (format "%s -o %s %s"
+           (if  (equal (file-name-extension file) "cpp") "g++" "gcc" )
+           (file-name-sans-extension file)
+           file)))
+    (compile compile-command)))
+
+;;(global-set-key [f9] 'code-compile)
 
 ;;; Other Modes
 (use-package haskell-mode)
@@ -326,10 +353,31 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(custom-safe-themes
-   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
+   '("42c0370f0d2e1c4776f372e91fc514977d0b0c14077954a1f229e6a630e08fe6" "c8cd8b9393a75a99556a2bb1b5dda053973b93a53ba7f6cf4fbad6b28ed1d039" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
+ '(hl-todo-keyword-faces
+   '(("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f")))
+ '(org-fontify-done-headline nil)
+ '(org-fontify-todo-headline nil)
  '(package-selected-packages
-   '(nix-mode haskell-mode company flycheck lsp-treemacs cider lsp-mode clojure-mode undo-tree evil-collection which-key use-package rainbow-delimiters ivy-rich hydra helpful general evil doom-modeline counsel command-log-mode centaur-tabs annalist)))
+   '(nix-mode haskell-mode company flycheck lsp-treemacs cider lsp-mode clojure-mode undo-tree evil-collection which-key use-package rainbow-delimiters ivy-rich hydra helpful general evil doom-modeline counsel command-log-mode centaur-tabs annalist))
+ '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
