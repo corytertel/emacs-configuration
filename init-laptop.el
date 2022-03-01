@@ -92,15 +92,15 @@
 
 ;; Setting the font
 (set-face-attribute 'default nil
-		    :family "Iosevka Nerd Font" :weight 'semilight :height 105)
+		    :family "RobotoMono Nerd Font" :weight 'light :height 100)
 (set-face-attribute 'bold nil
-		    :family "Iosevka Nerd Font" :weight 'regular :height 105)
+		    :family "RobotoMono Nerd Font" :weight 'regular)
 (set-face-attribute 'italic nil
-		    :family "Victor Mono" :weight 'semilight :slant 'italic)
+		    :family "Victor Mono" :weight 'semilight :slant 'italic :height 95)
 (set-fontset-font t 'unicode
-		  (font-spec :name "Iosevka Nerd Font" :size 16) nil)
+		  (font-spec :name "RobotoMono Nerd Font" :size 16) nil)
 (set-fontset-font t '(#xe000 . #xffdd)
-		  (font-spec :name "Iosevka Nerd Font" :size 12) nil)
+		  (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
 
 ;; Don't unload fonts when not in use
 (setq inhibit-compacting-font-caches t)
@@ -123,7 +123,11 @@
 
 (setq custom-safe-themes t) ; Treat all themes as safe
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
-;;(load-theme 'parchment t)
+(load-theme 'black-nord t)
+
+;; (use-package parchment-theme
+;;   :ensure t
+;;   :config (load-theme 'parchment t))
 
 ;; Display Line numbers
 (column-number-mode)
@@ -552,7 +556,7 @@
   :config
   (centaur-tabs-mode t)
   (setq centaur-tabs-style "bar")
-  (setq centaur-tabs-height 48)
+  (setq centaur-tabs-height 72)
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-plain-icons nil)
   (setq centaur-tabs-gray-out-icons 'buffer)
@@ -564,7 +568,7 @@
   (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
   (setq centaur-tabs-cycle-scope 'tabs)
   (centaur-tabs-headline-match)
-  (centaur-tabs-change-fonts "Iosevka Nerd Font" 105)
+  (centaur-tabs-change-fonts "RobotoMono Nerd Font" 100)
   (centaur-tabs-enable-buffer-reordering)
   (centaur-tabs-mode t)
   :init
@@ -790,9 +794,6 @@
 ;;  ;; If there is more than one, they won't work right.
 ;;  )
 
-(use-package parchment-theme
-  :ensure t
-  :config (load-theme 'parchment t))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
