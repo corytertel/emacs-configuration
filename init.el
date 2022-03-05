@@ -357,6 +357,7 @@
     "ws" '(split-and-follow-right :which-key "split right")
     "wS" '(split-and-follow-below :which-key "split below")
     "wb" '(balance-windows :which-key "balance windows")
+    "wr" '(hydra-window-resize/body :which-key "resize window")
 
     "wk" '(windmove-up :which-key "move focus up")
     "wj" '(windmove-down :which-key "move focus down")
@@ -521,6 +522,14 @@
   "scale text"
   ("j" text-scale-increase "in")
   ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(defhydra hydra-window-resize (:timeout 4)
+  "resize window"
+  ("k" shrink-window 5 "shrink vertically")
+  ("j" enlarge-window 5 "enlarge vertically")
+  ("h" shrink-window-horizontally 5 "shrink horizontally")
+  ("l" enlarge-window-horizontally 5 "enlarge horizontally")
   ("f" nil "finished" :exit t))
 
 (use-package projectile

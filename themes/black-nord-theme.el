@@ -106,7 +106,7 @@ to 'auto, tags may not be properly aligned. "
         (base          (if (eq variant 'dark) (if (true-color-p) "#d8dee9" "#b2b2b2") (if (true-color-p) "#655370" "#5f5f87")))
         (base-dim      (if (eq variant 'dark) (if (true-color-p) "#e5e9f0" "#585858") (if (true-color-p) "#a094a2" "#afafd7")))
         (bg1           (if (eq variant 'dark) (if (true-color-p) "#000507" "#262626") (if (true-color-p) "#fbf8ef" "#ffffff")))
-        (bg2           (if (eq variant 'dark) (if (true-color-p) "#0d1319" "#1c1c1c") (if (true-color-p) "#efeae9" "#e4e4e4")))
+        (bg2           (if (eq variant 'dark) (if (true-color-p) "#000507" "#1c1c1c") (if (true-color-p) "#efeae9" "#e4e4e4")))
         (bg3           (if (eq variant 'dark) (if (true-color-p) "#151d25" "#121212") (if (true-color-p) "#e3dedd" "#d0d0d0")))
         (bg4           (if (eq variant 'dark) (if (true-color-p) "#1e2731" "#080808") (if (true-color-p) "#d2ceda" "#bcbcbc")))
         (bg-alt        (if (eq variant 'dark) (if (true-color-p) "#373e4d" "#353535") (if (true-color-p) "#efeae9" "#e4e4e4")))
