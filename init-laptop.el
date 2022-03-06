@@ -142,13 +142,13 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Window dividers
-(setq window-divider-default-right-width 3)
-(let ((color (face-background 'mode-line)))
-  (dolist (face '(window-divider-first-pixel
-		  window-divider-last-pixel
-		  window-divider))
-    (set-face-foreground face color)))
-(window-divider-mode 1)
+;; (setq window-divider-default-right-width 3)
+;; (let ((color (face-background 'mode-line)))
+;;   (dolist (face '(window-divider-first-pixel
+;; 		  window-divider-last-pixel
+;; 		  window-divider))
+;;     (set-face-foreground face color)))
+;; (window-divider-mode 1)
 
 ;; Transparent frames
 ;; (dolist (frame (frame-list))
@@ -320,11 +320,11 @@
     "bb" '(counsel-switch-buffer :which-key "switch buffer")
     "bd" '(kill-this-buffer :which-key "kill buffer")
     "be" '(eval-buffer :which-key "eval buffer")
-    "bn" '(centaur-tabs-forward :which-key "next buffer")
-    "bp" '(centaur-tabs-backward :which-key "previous buffer")
-    ;;"bn" '(next-buffer :which-key "next buffer")
-    ;;"bp" '(previous-buffer :which-key "previous buffer")
-    "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
+    ;; "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
+    ;; "bn" '(centaur-tabs-forward :which-key "next buffer")
+    ;; "bp" '(centaur-tabs-backward :which-key "previous buffer")
+    "bn" '(next-buffer :which-key "next buffer")
+    "bp" '(previous-buffer :which-key "previous buffer")
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
@@ -558,37 +558,37 @@
 ;; (use-package evil-magit
 ;;   :after magit)
 
-(use-package forge)
+;; (use-package forge)
 
-(use-package centaur-tabs
-  :demand
-  :config
-  (centaur-tabs-mode t)
-  (setq centaur-tabs-style "bar")
-  (setq centaur-tabs-height 72)
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-plain-icons nil)
-  (setq centaur-tabs-gray-out-icons 'buffer)
-  (setq centaur-tabs-set-bar 'under)
-  (setq x-underline-at-descent-line t)
-  (setq centaur-tabs-set-close-button t)
-  (setq centaur-tabs-set-modified-marker t)
-  (setq centaur-tabs-adjust-buffer-order t)
-  (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
-  (setq centaur-tabs-cycle-scope 'tabs)
-  (centaur-tabs-headline-match)
-  (centaur-tabs-change-fonts "VictorMono Nerd Font" 100)
-  (centaur-tabs-enable-buffer-reordering)
-  (centaur-tabs-mode t)
-  :init
-  (setq centaur-tabs-enable-key-bindings t)
-  :bind
-  ;; Vim-like tab changing
-  (:map evil-normal-state-map
-	("g t" . centaur-tabs-forward)
-	("g T" . centaur-tabs-backward))
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t)
+;;   (setq centaur-tabs-style "bar")
+;;   (setq centaur-tabs-height 72)
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-plain-icons nil)
+;;   (setq centaur-tabs-gray-out-icons 'buffer)
+;;   (setq centaur-tabs-set-bar 'under)
+;;   (setq x-underline-at-descent-line t)
+;;   (setq centaur-tabs-set-close-button t)
+;;   (setq centaur-tabs-set-modified-marker t)
+;;   (setq centaur-tabs-adjust-buffer-order t)
+;;   (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
+;;   (setq centaur-tabs-cycle-scope 'tabs)
+;;   (centaur-tabs-headline-match)
+;;   (centaur-tabs-change-fonts "VictorMono Nerd Font" 100)
+;;   (centaur-tabs-enable-buffer-reordering)
+;;   (centaur-tabs-mode t)
+;;   :init
+;;   (setq centaur-tabs-enable-key-bindings t)
+;;   :bind
+;;   ;; Vim-like tab changing
+;;   (:map evil-normal-state-map
+;; 	("g t" . centaur-tabs-forward)
+;; 	("g T" . centaur-tabs-backward))
+;;   ("C-<prior>" . centaur-tabs-backward)
+;;   ("C-<next>" . centaur-tabs-forward))
 
 (use-package lsp-mode)
 (use-package lsp-treemacs)
