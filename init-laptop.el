@@ -92,15 +92,15 @@
 
 ;; Setting the font
 (set-face-attribute 'default nil
-		    :family "RobotoMono Nerd Font" :weight 'light :height 100)
+		    :family "VictorMono Nerd Font" :weight 'light :height 100)
 (set-face-attribute 'bold nil
-		    :family "RobotoMono Nerd Font" :weight 'regular)
+		    :family "VictorMono Nerd Font" :weight 'regular)
 (set-face-attribute 'italic nil
-		    :family "Victor Mono" :weight 'semilight :slant 'italic :height 95)
+		    :family "VictorMono Nerd Font" :weight 'semilight :slant 'italic)
 (set-fontset-font t 'unicode
-		  (font-spec :name "RobotoMono Nerd Font" :size 16) nil)
+		  (font-spec :name "VictorMono Nerd Font" :size 16) nil)
 (set-fontset-font t '(#xe000 . #xffdd)
-		  (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
+		  (font-spec :name "VictorMono Nerd Font" :size 12) nil)
 
 ;; Don't unload fonts when not in use
 (setq inhibit-compacting-font-caches t)
@@ -577,7 +577,7 @@
   (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
   (setq centaur-tabs-cycle-scope 'tabs)
   (centaur-tabs-headline-match)
-  (centaur-tabs-change-fonts "RobotoMono Nerd Font" 100)
+  (centaur-tabs-change-fonts "VictorMono Nerd Font" 100)
   (centaur-tabs-enable-buffer-reordering)
   (centaur-tabs-mode t)
   :init
