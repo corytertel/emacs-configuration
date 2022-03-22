@@ -295,6 +295,8 @@
 ;; Basic Keybind
 (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "S-C-c") 'kill-ring-save)
+(global-set-key (kbd "S-C-v") 'yank)
 
 ;; Define a binding just for a certain mode
 ;;(define-key emacs-lisp-mode-map (kbd "C-x M-t") 'counsel-load-theme)
@@ -315,12 +317,13 @@
     "b"  '(:ignore t :which-key "buffers")
     "bb" '(counsel-switch-buffer :which-key "switch buffer")
     "bd" '(kill-this-buffer :which-key "kill buffer")
+    "bD" '(kill-all-buffers-and-windows :which-key "kill all buffers")
     "be" '(eval-buffer :which-key "eval buffer")
-    "bn" '(centaur-tabs-forward :which-key "next buffer")
-    "bp" '(centaur-tabs-backward :which-key "previous buffer")
-    ;;"bn" '(next-buffer :which-key "next buffer")
-    ;;"bp" '(previous-buffer :which-key "previous buffer")
-    "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
+    ;; "bn" '(centaur-tabs-forward :which-key "next buffer")
+    ;; "bp" '(centaur-tabs-backward :which-key "previous buffer")
+    "bn" '(next-buffer :which-key "next buffer")
+    "bp" '(previous-buffer :which-key "previous buffer")
+    ;; "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
@@ -522,7 +525,7 @@
   "scale text"
   ("j" text-scale-increase "in")
   ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
+  ("q" nil "finished" :exit t))
 
 (defhydra hydra-window-resize (:timeout 4)
   "resize window"
@@ -530,7 +533,7 @@
   ("j" enlarge-window 5 "enlarge vertically")
   ("h" shrink-window-horizontally 5 "shrink horizontally")
   ("l" enlarge-window-horizontally 5 "enlarge horizontally")
-  ("f" nil "finished" :exit t))
+  ("q" nil "finished" :exit t))
 
 (use-package projectile
   :diminish projectile-mode
@@ -546,45 +549,45 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-(use-package magit
-  :commands (magit-status magit-get-current-branch)
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+;; (use-package magit
+;;   :commands (magit-status magit-get-current-branch)
+;;   :custom
+;;   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;; (use-package evil-magit
 ;;   :after magit)
 
-(use-package forge)
+;; (use-package forge)
 
-(use-package centaur-tabs
-  :demand
-  :config
-  (centaur-tabs-mode t)
-  (setq centaur-tabs-style "bar")
-  (setq centaur-tabs-height 48)
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-plain-icons nil)
-  (setq centaur-tabs-gray-out-icons 'buffer)
-  (setq centaur-tabs-set-bar 'under)
-  (setq x-underline-at-descent-line t)
-  (setq centaur-tabs-set-close-button t)
-  (setq centaur-tabs-set-modified-marker t)
-  (setq centaur-tabs-adjust-buffer-order t)
-  (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
-  (setq centaur-tabs-cycle-scope 'tabs)
-  (centaur-tabs-headline-match)
-  (centaur-tabs-change-fonts "Iosevka Nerd Font" 105)
-  (centaur-tabs-enable-buffer-reordering)
-  (centaur-tabs-mode t)
-  :init
-  (setq centaur-tabs-enable-key-bindings t)
-  :bind
-  ;; Vim-like tab changing
-  (:map evil-normal-state-map
-	("g t" . centaur-tabs-forward)
-	("g T" . centaur-tabs-backward))
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t)
+;;   (setq centaur-tabs-style "bar")
+;;   (setq centaur-tabs-height 48)
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-plain-icons nil)
+;;   (setq centaur-tabs-gray-out-icons 'buffer)
+;;   (setq centaur-tabs-set-bar 'under)
+;;   (setq x-underline-at-descent-line t)
+;;   (setq centaur-tabs-set-close-button t)
+;;   (setq centaur-tabs-set-modified-marker t)
+;;   (setq centaur-tabs-adjust-buffer-order t)
+;;   (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
+;;   (setq centaur-tabs-cycle-scope 'tabs)
+;;   (centaur-tabs-headline-match)
+;;   (centaur-tabs-change-fonts "Iosevka Nerd Font" 105)
+;;   (centaur-tabs-enable-buffer-reordering)
+;;   (centaur-tabs-mode t)
+;;   :init
+;;   (setq centaur-tabs-enable-key-bindings t)
+;;   :bind
+;;   ;; Vim-like tab changing
+;;   (:map evil-normal-state-map
+;; 	("g t" . centaur-tabs-forward)
+;; 	("g T" . centaur-tabs-backward))
+;;   ("C-<prior>" . centaur-tabs-backward)
+;;   ("C-<next>" . centaur-tabs-forward))
 
 (use-package lsp-mode)
 (use-package lsp-treemacs)
@@ -762,53 +765,17 @@
   ;;(setq explicit-zsh-args '())
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(ansi-color-names-vector
-;;    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
-;;  '(custom-safe-themes
-;;    '("42c0370f0d2e1c4776f372e91fc514977d0b0c14077954a1f229e6a630e08fe6" "c8cd8b9393a75a99556a2bb1b5dda053973b93a53ba7f6cf4fbad6b28ed1d039" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
-;;  '(hl-todo-keyword-faces
-;;    '(("TODO" . "#dc752f")
-;;      ("NEXT" . "#dc752f")
-;;      ("THEM" . "#2d9574")
-;;      ("PROG" . "#4f97d7")
-;;      ("OKAY" . "#4f97d7")
-;;      ("DONT" . "#f2241f")
-;;      ("FAIL" . "#f2241f")
-;;      ("DONE" . "#86dc2f")
-;;      ("NOTE" . "#b1951d")
-;;      ("KLUDGE" . "#b1951d")
-;;      ("HACK" . "#b1951d")
-;;      ("TEMP" . "#b1951d")
-;;      ("FIXME" . "#dc752f")
-;;      ("XXX+" . "#dc752f")
-;;      ("\\?\\?\\?+" . "#dc752f")))
-;;  '(org-fontify-done-headline nil)
-;;  '(org-fontify-todo-headline nil)
-;;  '(package-selected-packages
-;;    '(nix-mode haskell-mode company flycheck lsp-treemacs cider lsp-mode clojure-mode undo-tree evil-collection which-key use-package rainbow-delimiters ivy-rich hydra helpful general evil doom-modeline counsel command-log-mode centaur-tabs annalist))
-;;  '(pdf-view-midnight-colors '("#b2b2b2" . "#292b2e")))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  )
-
 (use-package parchment-theme
   :ensure t
   :config (load-theme 'parchment t))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(forge evil-magit magit paredit clojure-mode-extra-font-locking counsel-projectile projectile yasnippet which-key use-package undo-tree rainbow-delimiters parchment-theme nix-mode modern-cpp-font-lock lsp-treemacs ivy-rich helpful haskell-mode general flycheck evil doom-modeline cpp-auto-include counsel company command-log-mode cider centaur-tabs auto-complete))
+   '(forge evil-magit magit paredit clojure-mode-extra-font-locking counsel-projectile projectile yasnippet which-key use-package undo-tree rainbow-delimiters parchment-theme nix-mode modern-cpp-font-lock lsp-treemacs ivy-rich helpful haskell-mode general flycheck evil doom-modeline cpp-auto-include counsel company command-log-mode cider auto-complete))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -816,3 +783,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(show-paren-match ((t (:weight extra-bold :underline t)))))
+
+;;; init.el ends here

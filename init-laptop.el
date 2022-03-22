@@ -299,6 +299,8 @@
 ;; Basic Keybind
 (global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "S-C-c") 'kill-ring-save)
+(global-set-key (kbd "S-C-v") 'yank)
 
 ;; Define a binding just for a certain mode
 ;;(define-key emacs-lisp-mode-map (kbd "C-x M-t") 'counsel-load-theme)
@@ -319,6 +321,7 @@
     "b"  '(:ignore t :which-key "buffers")
     "bb" '(counsel-switch-buffer :which-key "switch buffer")
     "bd" '(kill-this-buffer :which-key "kill buffer")
+    "bD" '(kill-all-buffers-and-windows :which-key "kill all buffers")
     "be" '(eval-buffer :which-key "eval buffer")
     ;; "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
     ;; "bn" '(centaur-tabs-forward :which-key "next buffer")
@@ -526,7 +529,7 @@
   "scale text"
   ("j" text-scale-increase "in")
   ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
+  ("q" nil "finished" :exit t))
 
 (defhydra hydra-window-resize (:timeout 4)
   "resize window"
@@ -534,7 +537,7 @@
   ("j" enlarge-window 5 "enlarge vertically")
   ("h" shrink-window-horizontally 5 "shrink horizontally")
   ("l" enlarge-window-horizontally 5 "enlarge horizontally")
-  ("f" nil "finished" :exit t))
+  ("q" nil "finished" :exit t))
 
 (use-package projectile
   :diminish projectile-mode
