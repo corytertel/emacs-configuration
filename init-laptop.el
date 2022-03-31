@@ -138,7 +138,8 @@
 		term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook
-		cider-repl-mode-hook))
+		cider-repl-mode-hook
+		racket-repl-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Window dividers
@@ -213,6 +214,26 @@
 (defun dashboard-immortal ()
   "Make the dashboard buffer immortal."
   (emacs-lock-mode 'kill))
+
+;; Add padding to the sides
+(require 'frame)
+(setq-default default-frame-alist
+	      (append (list
+		       '(internal-border-width . 40)
+		       ;; '(left-fringe . 0)
+		       ;; '(right-fringe . 0)
+		       '(tool-bar-lines . 0)
+		       '(menu-bar-lines . 0)
+		       '(line-spacing . 0.075)
+		       '(vertical-scroll-bars . nil))))
+(setq-default window-resize-pixelwise t)
+(setq-default frame-resize-pixelwise t)
+(add-hook 'before-make-frame-hook 'window-divider-mode)
+
+;; Pretty mode (ligatures and indicators)
+(use-package pretty-mode
+  :config
+  (add-hook 'prog-mode-hook 'pretty-mode))
 
 ;; Word wrapping
 (global-visual-line-mode 1)
@@ -757,9 +778,34 @@
 
 ;;(global-set-key [f9] 'code-compile)
 
+;;; Racket
+(use-package racket-mode)
+(use-package flymake-racket)
+(use-package dr-racket-like-unicode)
+(use-package bracketed-paste)
+
+(add-hook 'racket-mode-hook
+	  (lambda ()
+	    (define-key racket-mode-map (kbd "<f5>") 'racket-run)))
+
+(add-hook 'racket-repl-mode-hook
+	  (lambda ()
+	    (define-key racket-repl-mode-map (kbd "<f5>") 'racket-run)))
+
+;;; Java
+
+;;; Latex
+;; (use-package latex-preview-pane)
+
 ;;; Other Modes
 (use-package haskell-mode)
 (use-package nix-mode)
+
+;; Use hex mode for binary files
+(add-to-list 'auto-mode-alist '("\\.bin\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.dat\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.exe\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.o\\'" . hexl-mode))
 
 ;;; Terminal
 

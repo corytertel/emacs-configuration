@@ -91,16 +91,26 @@
 (set-selection-coding-system 'utf-8)
 
 ;; Setting the font
+;; (set-face-attribute 'default nil
+;; 		    :family "Iosevka Nerd Font" :weight 'semilight :height 105)
+;; (set-face-attribute 'bold nil
+;; 		    :family "Iosevka Nerd Font" :weight 'regular :height 105)
+;; (set-face-attribute 'italic nil
+;; 		    :family "Victor Mono" :weight 'semilight :slant 'italic)
+;; (set-fontset-font t 'unicode
+;; 		  (font-spec :name "Iosevka Nerd Font" :size 16) nil)
+;; (set-fontset-font t '(#xe000 . #xffdd)
+;; 		  (font-spec :name "Iosevka Nerd Font" :size 12) nil)
 (set-face-attribute 'default nil
-		    :family "Iosevka Nerd Font" :weight 'semilight :height 105)
+		    :family "VictorMono Nerd Font" :weight 'regular :height 96)
 (set-face-attribute 'bold nil
-		    :family "Iosevka Nerd Font" :weight 'regular :height 105)
+		    :family "VictorMono Nerd Font" :weight 'bold :height 96)
 (set-face-attribute 'italic nil
-		    :family "Victor Mono" :weight 'semilight :slant 'italic)
+		    :family "VictorMono Nerd Font" :weight 'regular :slant 'italic)
 (set-fontset-font t 'unicode
-		  (font-spec :name "Iosevka Nerd Font" :size 16) nil)
+		  (font-spec :name "VictorMono Nerd Font" :size 16) nil)
 (set-fontset-font t '(#xe000 . #xffdd)
-		  (font-spec :name "Iosevka Nerd Font" :size 12) nil)
+		  (font-spec :name "VictorMono Nerd Font" :size 12) nil)
 
 ;; Don't unload fonts when not in use
 (setq inhibit-compacting-font-caches t)
@@ -123,7 +133,7 @@
 
 (setq custom-safe-themes t) ; Treat all themes as safe
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
-;;(load-theme 'parchment t)
+(load-theme 'plain-light t)
 
 ;; Display Line numbers
 (column-number-mode)
@@ -134,7 +144,8 @@
 		term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook
-		cider-repl-mode-hook))
+		cider-repl-mode-hook
+		racket-repl-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Window dividers
@@ -209,6 +220,26 @@
 (defun dashboard-immortal ()
   "Make the dashboard buffer immortal."
   (emacs-lock-mode 'kill))
+
+;; Add padding to the sides
+(require 'frame)
+(setq-default default-frame-alist
+	      (append (list
+		       '(internal-border-width . 40)
+		       ;; '(left-fringe . 0)
+		       ;; '(right-fringe . 0)
+		       '(tool-bar-lines . 0)
+		       '(menu-bar-lines . 0)
+		       '(line-spacing . 0.075)
+		       '(vertical-scroll-bars . nil))))
+(setq-default window-resize-pixelwise t)
+(setq-default frame-resize-pixelwise t)
+(add-hook 'before-make-frame-hook 'window-divider-mode)
+
+;; Pretty mode (ligatures and indicators)
+(use-package pretty-mode
+  :config
+  (add-hook 'prog-mode-hook 'pretty-mode))
 
 ;; Word wrapping
 (global-visual-line-mode 1)
@@ -753,9 +784,34 @@
 
 ;;(global-set-key [f9] 'code-compile)
 
+;;; Racket
+(use-package racket-mode)
+(use-package flymake-racket)
+(use-package dr-racket-like-unicode)
+(use-package bracketed-paste)
+
+(add-hook 'racket-mode-hook
+	  (lambda ()
+	    (define-key racket-mode-map (kbd "<f5>") 'racket-run)))
+
+(add-hook 'racket-repl-mode-hook
+	  (lambda ()
+	    (define-key racket-repl-mode-map (kbd "<f5>") 'racket-run)))
+
+;;; Java
+
+;;; Latex
+;; (use-package latex-preview-pane)
+
 ;;; Other Modes
 (use-package haskell-mode)
 (use-package nix-mode)
+
+;; Use hex mode for binary files
+(add-to-list 'auto-mode-alist '("\\.bin\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.dat\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.exe\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.o\\'" . hexl-mode))
 
 ;;; Terminal
 
@@ -765,9 +821,9 @@
   ;;(setq explicit-zsh-args '())
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
 
-(use-package parchment-theme
-  :ensure t
-  :config (load-theme 'parchment t))
+;; (use-package parchment-theme
+;;   :ensure t
+;;   :config (load-theme 'parchment t))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -775,7 +831,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(forge evil-magit magit paredit clojure-mode-extra-font-locking counsel-projectile projectile yasnippet which-key use-package undo-tree rainbow-delimiters parchment-theme nix-mode modern-cpp-font-lock lsp-treemacs ivy-rich helpful haskell-mode general flycheck evil doom-modeline cpp-auto-include counsel company command-log-mode cider auto-complete))
+   '(jdee bracketed-paste dr-racket-like-unicode flymake-racket racket-mode pretty-mode frame buffer-move page-break-lines dashboard forge evil-magit magit paredit clojure-mode-extra-font-locking counsel-projectile projectile yasnippet which-key use-package undo-tree rainbow-delimiters parchment-theme nix-mode modern-cpp-font-lock lsp-treemacs ivy-rich helpful haskell-mode general flycheck evil doom-modeline cpp-auto-include counsel company command-log-mode cider auto-complete))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -38,7 +38,7 @@
   "Spacemacs-theme options."
   :group 'faces)
 
-(defcustom spacemacs-theme-comment-bg t
+(defcustom spacemacs-theme-comment-bg nil
   "Use a background for comment lines."
   :type 'boolean
   :group 'spacemacs-theme)
@@ -48,7 +48,7 @@
   :type 'boolean
   :group 'spacemacs-theme)
 
-(defcustom spacemacs-theme-keyword-italic nil
+(defcustom spacemacs-theme-keyword-italic t
   "Enable italics for keywords."
   :type 'boolean
   :group 'spacemacs-theme)
@@ -106,7 +106,7 @@ to 'auto, tags may not be properly aligned. "
         (base          (if (eq variant 'dark) (if (true-color-p) "#000000" "#b2b2b2") (if (true-color-p) "#655370" "#5f5f87")))
         (base-dim      (if (eq variant 'dark) (if (true-color-p) "#3d3c3d" "#585858") (if (true-color-p) "#a094a2" "#afafd7")))
         (bg1           (if (eq variant 'dark) (if (true-color-p) "#ffffea" "#262626") (if (true-color-p) "#fbf8ef" "#ffffff")))
-        (bg2           (if (eq variant 'dark) (if (true-color-p) "#eaeaea" "#1c1c1c") (if (true-color-p) "#efeae9" "#e4e4e4")))
+        (bg2           (if (eq variant 'dark) (if (true-color-p) "#ffffea" "#1c1c1c") (if (true-color-p) "#efeae9" "#e4e4e4")))
         (bg3           (if (eq variant 'dark) (if (true-color-p) "#d7d7d7" "#121212") (if (true-color-p) "#e3dedd" "#d0d0d0")))
         (bg4           (if (eq variant 'dark) (if (true-color-p) "#b7b7b7" "#080808") (if (true-color-p) "#d2ceda" "#bcbcbc")))
         (bg-alt        (if (eq variant 'dark) (if (true-color-p) "#eaeaea" "#353535") (if (true-color-p) "#efeae9" "#e4e4e4")))
