@@ -91,16 +91,6 @@
 (set-selection-coding-system 'utf-8)
 
 ;; Setting the font
-;; (set-face-attribute 'default nil
-;; 		    :family "Iosevka Nerd Font" :weight 'semilight :height 105)
-;; (set-face-attribute 'bold nil
-;; 		    :family "Iosevka Nerd Font" :weight 'regular :height 105)
-;; (set-face-attribute 'italic nil
-;; 		    :family "Victor Mono" :weight 'semilight :slant 'italic)
-;; (set-fontset-font t 'unicode
-;; 		  (font-spec :name "Iosevka Nerd Font" :size 16) nil)
-;; (set-fontset-font t '(#xe000 . #xffdd)
-;; 		  (font-spec :name "Iosevka Nerd Font" :size 12) nil)
 (set-face-attribute 'default nil
 		    :family "VictorMono Nerd Font" :weight 'regular :height 96)
 (set-face-attribute 'bold nil
@@ -199,7 +189,6 @@
   :ensure t
   :defer t
   :init
-  ;; <<dashboard-init>>
   (dashboard-setup-startup-hook)
   :custom ((inhibit-start-screen t)
 	   (dashboard-set-footer nil)
@@ -207,7 +196,9 @@
 	   (dashboard-items '((recents . 10)))
 	   (initial-buffer-choice #'dashboard-or-scratch)
 	   (dashboard-banner-logo-title
-	    "Welcome to GNU Emacs!"))
+	    "Welcome to GNU Emacs!")
+	   (dashboard-center-content t)
+	   (dashboard-show-shortcuts nil))
   :hook (dashboard-mode . dashboard-immortal))
 
 ;; Show dashboard or scratch initially
@@ -236,43 +227,6 @@
 (setq-default frame-resize-pixelwise t)
 (add-hook 'before-make-frame-hook 'window-divider-mode)
 
-;; Pretty mode (ligatures and indicators)
-(use-package pretty-mode
-  :config
-  (add-hook 'prog-mode-hook 'pretty-mode))
-
-;; Word wrapping
-(global-visual-line-mode 1)
-(setq-default fill-column 80)
-(add-hook 'text-mode-hook #'turn-on-auto-fill)
-
-;; Make the cursor a bar
-(setq-default cursor-type 'bar)
-
-;; Turn ^L into pretty lines
-(use-package page-break-lines
-  :ensure t
-  :defer t
-  :hook (after-init . global-page-break-lines-mode))
-
-;; Highlight matching parentheses
-(use-package paren
-  :defer t
-  :init
-  (show-paren-mode 1)
-  :custom-face (show-paren-match
-		((t (:weight extra-bold
-			     :underline t))))
-  :custom ((show-paren-style 'parentheses)
-	   (show-paren-delay 0.00000001)))
-
-;; Rainbow delimiters
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-;; Auto pairs
-(electric-pair-mode)
-
 ;; Scroll conservatively
 ;; (setq scroll-conservatively 101)
 
@@ -284,10 +238,6 @@
 ;;       mouse-wheel-scroll-amount '(1 ((shift) . 1))
 ;;       mouse-wheel-progressive-speed nil
 ;;       mouse-wheel-follow-mouse t)
-
-;; Show empty whitespace
-(global-whitespace-mode)
-(setq whitespace-style '(face trailing tabs lines empty big-indent))
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -305,19 +255,19 @@
 
 (use-package ivy
   :diminish
-  :bind (("C-s" . swiper)
+  :bind (("M-s" . swiper)
 	 :map ivy-minibuffer-map
 	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
+	 ("M-l" . ivy-alt-done)
+	 ("M-j" . ivy-next-line)
+	 ("M-k" . ivy-previous-line)
 	 :map ivy-switch-buffer-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-l" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
+	 ("M-k" . ivy-previous-line)
+	 ("M-l" . ivy-done)
+	 ("M-d" . ivy-switch-buffer-kill)
 	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
+	 ("M-k" . ivy-previous-line)
+	 ("M-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
@@ -349,12 +299,23 @@
     "bb" '(counsel-switch-buffer :which-key "switch buffer")
     "bd" '(kill-this-buffer :which-key "kill buffer")
     "bD" '(kill-all-buffers-and-windows :which-key "kill all buffers")
-    "be" '(eval-buffer :which-key "eval buffer")
+    "be" '(eval-last-sexp :which-key "eval last expression")
+    "bE" '(eval-buffer :which-key "eval buffer")
     ;; "bn" '(centaur-tabs-forward :which-key "next buffer")
     ;; "bp" '(centaur-tabs-backward :which-key "previous buffer")
     "bn" '(next-buffer :which-key "next buffer")
     "bp" '(previous-buffer :which-key "previous buffer")
     ;; "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
+
+    ;; Copy
+    "c"  '(:ignore t :which-key "copy")
+    "cc" '(copy-as-format :which-key "copy (default)")
+    "cg" '(copy-as-format-github :which-key "copy (github)")
+    "ct" '(copy-as-format-markdown-table :which-key "copy (markdown table)")
+    "cm" '(copy-as-format-markdown :which-key "copy (markdown)")
+    "co" '(copy-as-format-org-mode :which-key "copy (orgmode)")
+    "cd" '(copy-as-format-slack :which-key "copy (discord)")
+    "cv" '(org-copy-visible :which-key "org copy (visible)")
 
     ;; Files
     "f"  '(:ignore t :which-key "files")
@@ -369,8 +330,9 @@
 
     ;; Operations
     "o"  '(:ignore t :which-key "operations")
-    "or" '(replace-string :which-key "replace string")
     "oc" '(comment-or-uncomment-region :which-key "comment region")
+    "or" '(replace-string :which-key "replace string")
+    "os" '(swiper :which-key "search")
 
     ;; Projects
     "p" '(projectile-command-map :which-key "projects")
@@ -380,6 +342,7 @@
 
     ;; Toggles
     "t"  '(:ignore t :which-key "toggles")
+    "tf" '(treemacs :which-key "file viewer")
     "ts" '(hydra-text-scale/body :which-key "scale text")
     "tt" '(counsel-load-theme :which-key "choose theme")
 
@@ -417,16 +380,12 @@
     "L" '(buf-move-right :which-key "move window right")
 
     "u" '(evil-scroll-page-up :which-key "page up")
-    "d" '(evil-scroll-page-down :which-key "page down")
-    ))
+    "d" '(evil-scroll-page-down :which-key "page down")))
 
 ;; Window management
 (use-package buffer-move
   :ensure t
   :defer t
-  ;; :init
-  ;; <<window-management-init>>
-  ;; <<window-management-vars>>
   :bind (("C-x o" . nil)
 	 ("C-x o k" . windmove-up)
 	 ("C-x o j" . windmove-down)
@@ -484,7 +443,9 @@
 		  eshell-mode
 		  special-mode
 		  term-mode
-		  cider-repl-mode))
+		  cider-repl-mode
+		  racket-repl-mode
+		  dashboard-mode))
     (add-to-list 'evil-emacs-state-modes mode)))
 
 (use-package evil
@@ -580,10 +541,10 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-;; (use-package magit
-;;   :commands (magit-status magit-get-current-branch)
-;;   :custom
-;;   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+(use-package magit
+  :commands (magit-status magit-get-current-branch)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;; (use-package evil-magit
 ;;   :after magit)
@@ -620,20 +581,410 @@
 ;;   ("C-<prior>" . centaur-tabs-backward)
 ;;   ("C-<next>" . centaur-tabs-forward))
 
-(use-package lsp-mode)
-(use-package lsp-treemacs)
+;;; IDE Features
 
-(use-package company
+;; Pretty mode (ligatures and indicators)
+(use-package pretty-mode
+  :config
+  (add-hook 'prog-mode-hook 'pretty-mode))
+
+;; Ligatures
+;; (use-package ligature
+;;   :hook (prog-mode . ligature-mode)
+;;   :config
+;;   ;; Some ligatures supported by most fonts. E.g. Fira Code, Victor Mono
+;;   (ligature-set-ligatures 'prog-mode
+;; 			  '("~~>" "##" "|-" "-|" "|->" "|=" ">-" "<-" "<--" "->"
+;;                             "-->" "-<" ">->" ">>-" "<<-" "<->" "->>" "-<<" "<-<"
+;;                             "==>" "=>" "=/=" "!==" "!=" "<==" ">>=" "=>>" ">=>"
+;;                             "<=>" "<=<" "=<=" "=>=" "<<=" "=<<"
+;;                             "=:=" "=!=" "==" "===" "::" ":=" ":>" ":<" ">:"
+;;                             ";;" "/=" "__" "&&" "++")))
+
+;; Automatically remove trailing whitespace if user put it there
+(use-package ws-butler
+  :hook ((text-mode prog-mode) . ws-butler-mode)
+  :config (setq ws-butler-keep-whitespace-before-point nil))
+
+;; Word wrapping
+(global-visual-line-mode 1)
+(setq-default fill-column 80)
+(add-hook 'text-mode-hook #'turn-on-auto-fill)
+
+;; Make the cursor a bar
+(setq-default cursor-type 'bar)
+
+;; Turn ^L into pretty lines
+(use-package page-break-lines
   :ensure t
   :defer t
-  :custom ((company-idle-delay 0.75)
-	   (company-minimum-prefix-length 3))
-  :hook (after-init . global-company-mode)
+  :hook (after-init . global-page-break-lines-mode))
+
+;; Highlight matching parentheses
+;; (use-package paren
+;;   :defer t
+;;   :init
+;;   (show-paren-mode 1)
+;;   :custom-face (show-paren-match
+;; 		((t (:weight extra-bold
+;; 			     :underline t))))
+;;   :custom ((show-paren-style 'parentheses)
+;; 	   (show-paren-delay 0.00000001)))
+
+;; Rainbow delimiters
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Auto pairs
+;; (electric-pair-mode)
+
+;; Show empty whitespace
+(global-whitespace-mode)
+(setq whitespace-style '(face trailing tabs lines empty big-indent))
+
+;; Use hex mode for binary files
+(add-to-list 'auto-mode-alist '("\\.bin\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.dat\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.exe\\'" . hexl-mode))
+(add-to-list 'auto-mode-alist '("\\.o\\'" . hexl-mode))
+
+;; Highlight and navigate TODO keywords
+(use-package hl-todo
+  :defer 2
+  :config (global-hl-todo-mode))
+
+;; Visual feedback on some operations like yank, kill, undo
+(use-package goggles
+  :defer 10
+  :config (goggles-mode))
+
+;; Show the name of the current function definition in the modeline
+(use-package which-func
+  :defer 5
+  :config (which-function-mode 1))
+
+;;; Smartparens
+(use-package smartparens
+  :defer 1
+  :hook ((
+          emacs-lisp-mode lisp-mode lisp-data-mode clojure-mode cider-repl-mode
+	  racket-mode racket-repl-mode hy-mode prolog-mode go-mode cc-mode
+	  python-mode typescript-mode json-mode javascript-mode ;java-mode
+          ) . smartparens-strict-mode)
+  ;; :hook (prog-mode . smartparens-strict-mode)
+  :bind (:map smartparens-mode-map
+         ;; This is the paredit mode map minus a few key bindings
+         ;; that I use in other modes (e.g. M-?)
+         ("C-M-f" . sp-forward-sexp) ;; navigation
+         ("C-M-b" . sp-backward-sexp)
+         ("C-M-u" . sp-backward-up-sexp)
+         ("C-M-d" . sp-down-sexp)
+         ("C-M-p" . sp-backward-down-sexp)
+         ("C-M-n" . sp-up-sexp)
+         ("C-w" . whole-line-or-region-sp-kill-region)
+         ("M-s" . sp-splice-sexp) ;; depth-changing commands
+         ("M-r" . sp-splice-sexp-killing-around)
+         ("M-(" . sp-wrap-round)
+         ("C-)" . sp-forward-slurp-sexp) ;; barf/slurp
+         ("C-<right>" . sp-forward-slurp-sexp)
+         ("C-}" . sp-forward-barf-sexp)
+         ("C-<left>" . sp-forward-barf-sexp)
+         ("C-(" . sp-backward-slurp-sexp)
+         ("C-M-<left>" . sp-backward-slurp-sexp)
+         ("C-{" . sp-backward-barf-sexp)
+         ("C-M-<right>" . sp-backward-barf-sexp)
+         ("M-S" . sp-split-sexp) ;; misc
+         ("M-j" . sp-join-sexp))
+  :config
+  (require 'smartparens-config)
+  (setq sp-base-key-bindings 'paredit)
+  (setq sp-autoskip-closing-pair 'always)
+
+  ;; Don't insert annoying colon after Python def
+  (setq sp-python-insert-colon-in-function-definitions nil)
+
+  ;; Always highlight matching parens
+  (show-smartparens-global-mode +1)
+  (setq blink-matching-paren nil)  ;; Don't blink matching parens
+
+  (defun whole-line-or-region-sp-kill-region (prefix)
+    "Call `sp-kill-region' on region or PREFIX whole lines."
+    (interactive "*p")
+    (whole-line-or-region-wrap-beg-end 'sp-kill-region prefix))
+
+  ;; Create keybindings to wrap symbol/region in pairs
+  (defun prelude-wrap-with (s)
+    "Create a wrapper function for smartparens using S."
+    `(lambda (&optional arg)
+       (interactive "P")
+       (sp-wrap-with-pair ,s)))
+  (define-key prog-mode-map (kbd "M-(") (prelude-wrap-with "("))
+  (define-key prog-mode-map (kbd "M-[") (prelude-wrap-with "["))
+  (define-key prog-mode-map (kbd "M-{") (prelude-wrap-with "{"))
+  (define-key prog-mode-map (kbd "M-\"") (prelude-wrap-with "\""))
+  (define-key prog-mode-map (kbd "M-'") (prelude-wrap-with "'"))
+  (define-key prog-mode-map (kbd "M-`") (prelude-wrap-with "`"))
+
+  ;; smart curly braces
+  (sp-pair "{" nil :post-handlers
+           '(((lambda (&rest _ignored)
+                (crux-smart-open-line-above)) "RET")))
+  (sp-pair "[" nil :post-handlers
+           '(((lambda (&rest _ignored)
+                (crux-smart-open-line-above)) "RET")))
+  (sp-pair "(" nil :post-handlers
+           '(((lambda (&rest _ignored)
+                (crux-smart-open-line-above)) "RET")))
+
+  ;; Don't include semicolon ; when slurping
+  (add-to-list 'sp-sexp-suffix '(java-mode regexp ""))
+
+  ;; use smartparens-mode everywhere
+  (smartparens-global-mode))
+
+;;; end smartparens
+
+;; Multiple cursors
+(use-package multiple-cursors
+  :bind (("C-c m" . mc/mark-all-dwim)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         :map mc/keymap
+         ("C-x v" . mc/vertical-align-with-space)
+         ("C-x n" . mc-hide-unmatched-lines-mode))
+  :config
+  (global-unset-key (kbd "M-<down-mouse-1>"))
+  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+
+  (with-eval-after-load 'multiple-cursors-core
+    ;; Immediately load mc list, otherwise it will show as
+    ;; changed as empty in my git repo
+    (mc/load-lists)
+
+    (define-key mc/keymap (kbd "M-T") 'mc/reverse-regions)
+    (define-key mc/keymap (kbd "C-,") 'mc/unmark-next-like-this)
+    (define-key mc/keymap (kbd "C-.") 'mc/skip-to-next-like-this)))
+
+;; Copy text as Discord/GitHub/etc formatted code
+(use-package copy-as-format
+  :config
+  (setq copy-as-format-default "slack")
+  (defun copy-as-format--markdown-table (text _multiline)
+    (s-replace "--+--" "--|--" text))
+  (add-to-list 'copy-as-format-format-alist '("markdown-table" copy-as-format--markdown-table)))
+
+(use-package lsp-mode
+  :bind (:map lsp-mode-map
+         ("C-c C-a" . lsp-execute-code-action)
+         ("M-." . lsp-find-definition-other)
+         ("M-," . lsp-find-references-other))
+  :init (setq lsp-keymap-prefix nil)  ; Don't map the lsp keymap to any key
+  :config
+  ;; Increase lsp file watch threshold when lsp shows a warning
+  (setq lsp-file-watch-threshold 1500)
+
+  (defun lsp-find-definition-other (other?)
+    "Like `lsp-find-definition' but open in other window when called with prefix arg."
+    (interactive "P")
+    (back-button-push-mark-local-and-global)
+    (if other?
+        (lsp-find-definition :display-action 'window)
+      (lsp-find-definition)))
+  (defun lsp-find-references-other (other?)
+    "Like `lsp-find-references' but open in other window when called with prefix arg."
+    (interactive "P")
+    (back-button-push-mark-local-and-global)
+    (if other?
+        (lsp-find-references :display-action 'window)
+      (lsp-find-references)))
+
+  ;; Don't watch `build' and `.gradle' directories for file changes
+  (add-to-list 'lsp-file-watch-ignored "[/\\\\]build$")
+  (add-to-list 'lsp-file-watch-ignored "[/\\\\]\\.gradle$")
+
+  (require 'yasnippet)) ;; Use yasnippet for lsp snippet support
+
+(use-package lsp-ui
+  :bind (:map lsp-mode-map
+         ("M-?" . lsp-ui-doc-toggle))
+  :config
+  (defun lsp-ui-doc-toggle ()
+    "Shows or hides lsp-ui-doc popup."
+    (interactive)
+    (if lsp-ui-doc--bounds
+        (lsp-ui-doc-hide)
+      (lsp-ui-doc-show)))
+
+  ;; Deactivate most of the annoying "fancy features"
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-use-childframe t)
+  (setq lsp-ui-doc-include-signature t)
+  (setq lsp-ui-doc-position 'at-point)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-hover nil)
+  (setq lsp-ui-sideline-show-symbol nil))
+
+(use-package lsp-treemacs
+  :after lsp-mode
+  :config
+  ;; Enable bidirectional synchronization of lsp workspace folders and treemacs
+  (lsp-treemacs-sync-mode))
+
+(use-package dap-mode
+  :after lsp-mode
+  :bind (:map dap-server-log-mode-map
+         ("g" . recompile)
+         :map dap-mode-map
+         ([f9] . dap-continue)
+         ([S-f9] . dap-disconnect)
+         ([f10] . dap-next)
+         ([f11] . dap-step-in)
+         ([S-f11] . dap-step-out)
+         ([f12] . dap-hide/show-ui))
+  :config
+  ;; FIXME: Create nice solution instead of a hack
+  (defvar dap-hide/show-ui-hidden? t)
+  (defun dap-hide/show-ui ()
+    "Hide/show dap ui. FIXME"
+    (interactive)
+    (if dap-hide/show-ui-hidden?
+        (progn
+          (setq dap-hide/show-ui-hidden? nil)
+          (dap-ui-locals)
+          (dap-ui-repl))
+      (dolist (buf '("*dap-ui-inspect*" "*dap-ui-locals*" "*dap-ui-repl*" "*dap-ui-sessions*"))
+        (when (get-buffer buf)
+          (kill-buffer buf)))
+      (setq dap-hide/show-ui-hidden? t)))
+
+  (dap-mode)
+  ;; displays floating panel with debug buttons
+  (dap-ui-controls-mode)
+  ;; Displaying DAP visuals
+  (dap-ui-mode))
+
+;; (use-package company
+;;   :ensure t
+;;   :defer t
+;;   :custom ((company-idle-delay 0.75)
+;; 	   (company-minimum-prefix-length 3))
+;;   :hook (after-init . global-company-mode)
+;;   :bind (:map company-active-map
+;; 	      ("M-n" . nil)
+;; 	      ("M-p" . nil)
+;; 	      ("C-n" . company-select-next)
+;; 	      ("C-p" . company-select-previous)))
+
+;; Autocompletion
+(use-package company
+  :defer 1
   :bind (:map company-active-map
-	      ("M-n" . nil)
-	      ("M-p" . nil)
-	      ("C-n" . company-select-next)
-	      ("C-p" . company-select-previous)))
+         ([return] . nil)
+         ("RET" . nil)
+
+         ("TAB" . company-complete-selection)
+         ([tab] . company-complete-selection)
+         ("S-TAB" . company-select-previous)
+         ([backtab] . company-select-previous)
+         ("C-j" . company-complete-selection))
+  :config
+  (setq company-idle-delay 0.1)
+  (setq company-tooltip-limit 10)
+  (setq company-minimum-prefix-length 1)
+  ;; Don't display icons
+  (setq company-format-margin-function nil)
+  ;; Aligns annotation to the right hand side
+  (setq company-tooltip-align-annotations t)
+  ;;(setq company-dabbrev-downcase nil)
+  ;; invert the navigation direction if the the completion popup-isearch-match
+  ;; is displayed on top (happens near the bottom of windows)
+  ;;(setq company-tooltip-flip-when-above t)
+  ;; start autocompletion only after typing
+  (setq company-begin-commands '(self-insert-command))
+  (global-company-mode 1)
+
+  (use-package company-emoji
+    :disabled t
+    :config (add-to-list 'company-backends 'company-emoji))
+
+  (use-package company-quickhelp
+    :disabled t
+    :config (company-quickhelp-mode 1))
+
+  ;; Add yasnippet support for all company backends
+  (defvar company-mode/enable-yas t
+    "Enable yasnippet for all backends.")
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+        backend
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
+  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
+
+;; Enhances TAB select
+(use-package company-tng
+  :disabled t
+  :after company
+  :bind (:map company-active-map
+         ([return] . nil)
+         ("RET" . nil)
+         ("TAB" . company-select-next)
+         ([tab] . company-select-next)
+         ("S-TAB" . company-select-previous)
+         ([backtab] . company-select-previous)
+         ("C-j" . company-complete-selection))
+  :config
+  (company-tng-mode))
+
+;; Autocompletion for shell
+(use-package company-shell
+  :hook ((sh-mode shell-mode) . sh-mode-init)
+  :config
+  (defun sh-mode-init ()
+    (setq-local company-backends
+		'((company-shell
+                   company-shell-env
+                   company-files
+                   company-dabbrev-code
+                   company-capf
+                   company-yasnippet)))))
+
+;; Tramp
+(use-package tramp
+  :defer t
+  :config
+  (setq tramp-default-method "ssh")
+
+  ;; Only for debugging slow tramp connections
+  ;;(setq tramp-verbose 7)
+
+  ;; Skip version control for tramp files
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+
+  ;; Use ControlPath from .ssh/config
+  (setq tramp-ssh-controlmaster-options "")
+
+  ;; Backup tramp files like local files and don't litter the remote
+  ;; file system with my emacs backup files
+  ;;(setq tramp-backup-directory-alist backup-directory-alist)
+  (add-to-list 'backup-directory-alist
+               (cons tramp-file-name-regexp
+                     (no-littering-expand-var-file-name "backup/")))
+
+  ;; See https://www.gnu.org/software/tramp/#Ad_002dhoc-multi_002dhops
+  ;; For all hosts, except my local one, first connect via ssh, and then apply sudo -u root:
+  (dolist (tramp-proxies '((nil "\\`root\\'" "/ssh:%h:")
+                           ((regexp-quote (system-name)) nil nil)
+                           ("localhost" nil nil)
+                           ("blif\\.vpn" nil nil)
+                           ("skor-pi" nil nil)
+                           ;; Add tramp proxy for atomx user
+                           (nil "atomx" "/ssh:%h:")))
+    (add-to-list 'tramp-default-proxies-alist tramp-proxies)))
 
 (use-package flycheck
   :ensure t
@@ -677,10 +1028,224 @@
       :fringe-bitmap 'my-flycheck-fringe-indicator
       :fringe-face 'flycheck-fringe-info)))
 
+;;; Lisps
+
+;; Nicer elisp regex syntax highlighting
+(use-package easy-escape
+  :hook ((emacs-lisp-mode lisp-mode) . easy-escape-minor-mode))
+
+;; From: https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94
+;; redefines the silly indent of keyword lists
+;; before
+;;   (:foo bar
+;;         :baz qux)
+;; after
+;;   (:foo bar
+;;    :baz qux)
+(eval-after-load "lisp-mode"
+  '(defun lisp-indent-function (indent-point state)
+     "This function is the normal value of the variable `lisp-indent-function'.
+The function `calculate-lisp-indent' calls this to determine
+if the arguments of a Lisp function call should be indented specially.
+INDENT-POINT is the position at which the line being indented begins.
+Point is located at the point to indent under (for default indentation);
+STATE is the `parse-partial-sexp' state for that position.
+If the current line is in a call to a Lisp function that has a non-nil
+property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
+it specifies how to indent.  The property value can be:
+- `defun', meaning indent `defun'-style
+  \(this is also the case if there is no property and the function
+  has a name that begins with \"def\", and three or more arguments);
+- an integer N, meaning indent the first N arguments specially
+  (like ordinary function arguments), and then indent any further
+  arguments like a body;
+- a function to call that returns the indentation (or nil).
+  `lisp-indent-function' calls this function with the same two arguments
+  that it itself received.
+This function returns either the indentation to use, or nil if the
+Lisp function does not specify a special indentation."
+     (let ((normal-indent (current-column))
+           (orig-point (point)))
+       (goto-char (1+ (elt state 1)))
+       (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+       (cond
+        ;; car of form doesn't seem to be a symbol, or is a keyword
+        ((and (elt state 2)
+              (or (not (looking-at "\\sw\\|\\s_"))
+                  (looking-at ":")))
+         (if (not (> (save-excursion (forward-line 1) (point))
+                     calculate-lisp-indent-last-sexp))
+             (progn (goto-char calculate-lisp-indent-last-sexp)
+                    (beginning-of-line)
+                    (parse-partial-sexp (point)
+                                        calculate-lisp-indent-last-sexp 0 t)))
+         ;; Indent under the list or under the first sexp on the same
+         ;; line as calculate-lisp-indent-last-sexp.  Note that first
+         ;; thing on that line has to be complete sexp since we are
+         ;; inside the innermost containing sexp.
+         (backward-prefix-chars)
+         (current-column))
+        ((and (save-excursion
+                (goto-char indent-point)
+                (skip-syntax-forward " ")
+                (not (looking-at ":")))
+              (save-excursion
+                (goto-char orig-point)
+                (looking-at ":")))
+         (save-excursion
+           (goto-char (+ 2 (elt state 1)))
+           (current-column)))
+        (t
+         (let ((function (buffer-substring (point)
+                                           (progn (forward-sexp 1) (point))))
+               method)
+           (setq method (or (function-get (intern-soft function)
+                                          'lisp-indent-function)
+                            (get (intern-soft function) 'lisp-indent-hook)))
+           (cond ((or (eq method 'defun)
+                      (and (null method)
+                           (> (length function) 3)
+                           (string-match "\\`def" function)))
+                  (lisp-indent-defform state indent-point))
+                 ((integerp method)
+                  (lisp-indent-specform method state
+                                        indent-point normal-indent))
+                 (method
+                  (funcall method indent-point state)))))))))
+
+;;; Elisp
+(use-package subr-x
+  :defer t
+  :config
+  (put 'if-let   'byte-obsolete-info nil)
+  (put 'when-let 'byte-obsolete-info nil))
+
+(use-package elisp-mode
+  :bind (:map emacs-lisp-mode-map
+         ("C-c C-c" . eval-defun)
+         ("C-c C-b" . eval-buffer)
+         ("C-c C-k" . eval-buffer)
+         ("C-c ;"   . eval-print-as-comment))
+  :config
+  (defvar eval-print-as-comment-prefix ";;=> ")
+
+  (defun eval-print-as-comment (&optional arg)
+    (interactive "P")
+    (let ((start (point)))
+      (eval-print-last-sexp arg)
+      (save-excursion
+        (goto-char start)
+        (save-match-data
+          (re-search-forward "[[:space:]\n]*" nil t)
+          (insert eval-print-as-comment-prefix)))))
+
+  (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                    (setq mode-name "EL"))))
 
 ;;; Clojure
-(use-package clojure-mode)
-(use-package cider)
+(use-package clojure-mode
+  :defer t
+  :interpreter ("bb" . clojure-mode)
+  :config
+  ;; Eval top level forms inside comment forms instead of the comment form itself
+  (setq clojure-toplevel-inside-comment-form t)
+  ;; Indent fn-traced and defn-traced the same as a regular defn.
+  ;; The macros are for re-frame-10x tracing.
+  (put-clojure-indent 'fn-traced :defn)
+  (put-clojure-indent 'defn-traced :defn))
+
+(use-package cider
+  :bind (:map cider-mode-map
+         ("M-?" . cider-maybe-clojuredocs)
+         :map cider-repl-mode-map
+         ("M-?" . cider-doc))
+  :hook (((cider-mode cider-repl-mode) . cider-company-enable-fuzzy-completion)
+         (cider-mode . eldoc-mode))
+  :config
+  (defun cider-maybe-clojuredocs (&optional arg)
+    "Like `cider-doc' but call `cider-clojuredocs' when invoked with prefix arg in `clojure-mode'."
+    (interactive "P")
+    (if (and arg (eq major-mode 'clojure-mode))
+        (cider-clojuredocs arg)
+      (cider-doc)))
+
+  ;; Location of the jdk sources. In Arch Linux package `openjdk-src'
+  (setq cider-jdk-src-paths "/usr/lib/jvm/java-11-openjdk/lib/src.zip")
+
+  (require 's)
+
+  ;; Inject reveal middleware in cider-jack-in when the `:reveal' alias is set
+  (defun cider-cli-global-options-contains-reveal? (&rest _)
+    (and cider-clojure-cli-global-options
+         (s-contains? ":reveal" cider-clojure-cli-global-options)))
+  (add-to-list 'cider-jack-in-nrepl-middlewares
+               '("vlaaad.reveal.nrepl/middleware" :predicate cider-cli-global-options-contains-reveal?))
+
+  ;; Inject shadowcljs nrepl middleware in cider-jack-in when the `:cljs' alias is set
+  (defun cider-cli-global-options-contains-cljs? (&rest _)
+    (and cider-clojure-cli-global-options
+         (s-contains? ":cljs" cider-clojure-cli-global-options)))
+  (add-to-list 'cider-jack-in-nrepl-middlewares
+               '("shadow.cljs.devtools.server.nrepl/middleware" :predicate cider-cli-global-options-contains-cljs?))
+
+
+  ;; jack-in for babashka
+  (defun cider-jack-in-babashka ()
+    "Start an babashka nREPL server for the current project and connect to it."
+    (interactive)
+    (let* ((default-directory (project-root (project-current t)))
+           (process-filter (lambda (proc string)
+                             "Run cider-connect once babashka nrepl server is ready."
+                             (when (string-match "Started nREPL server at .+:\\([0-9]+\\)" string)
+                               (cider-connect-clj (list :host "localhost"
+                                                        :port (match-string 1 string)
+                                                        :project-dir default-directory)))
+                             ;; Default behavior: write to process buffer
+                             (internal-default-process-filter proc string))))
+      (set-process-filter
+       (start-file-process "babashka" "*babashka*" "bb" "--nrepl-server" "0")
+       process-filter)))
+
+  ;; Store more items in repl history (default 500)
+  (setq cider-repl-history-size 2000)
+  ;; When loading the buffer (C-c C-k) save first without asking
+  (setq cider-save-file-on-load t)
+  ;; Don't show cider help text in repl after jack-in
+  (setq cider-repl-display-help-banner nil)
+  ;; Don't focus repl after sending somehint to there from another buffer
+  (setq cider-switch-to-repl-on-insert nil)
+  ;; Eval automatically when insreting in the repl (e..g. C-c C-j d/e) (unless called with prefix)
+  (setq cider-invert-insert-eval-p t)
+  ;; Don't focus error buffer when error is thrown
+  (setq cider-auto-select-error-buffer nil)
+  ;; Don't focus inspector after evaluating something
+  (setq cider-inspector-auto-select-buffer nil)
+  ;; Display context dependent info in the eldoc where possible.
+  (setq cider-eldoc-display-context-dependent-info t)
+  ;; Don't pop to the REPL buffer on connect
+  ;; Create and display the buffer, but don't focus it.
+  (setq cider-repl-pop-to-buffer-on-connect 'display-only)
+  ;; Just use symbol under point and don't prompt for symbol in e.g. cider-doc.
+  (setq cider-prompt-for-symbol nil))
+
+(use-package clj-refactor
+  :hook (clojure-mode . clj-refactor-mode)
+  :config
+  (dolist (magit-require '(("csv" . "clojure.data.csv")
+                           ("edn" . "clojure.edn")
+                           ;; ("http" . "clj-http.client")
+                           ("reagent" . "reagent.core")
+                           ("re-frame" . "re-frame.core")))
+    (add-to-list 'cljr-magic-require-namespaces magit-require)))
+
+(use-package flycheck-clj-kondo
+  :after (flycheck clojure-mode))
+
+(use-package ob-clojure
+  :after ob
+  :config
+  (setq org-babel-clojure-backend 'cider))
+
 (use-package clojure-mode-extra-font-locking)
 (use-package paredit)
 
@@ -758,12 +1323,12 @@
 (use-package yasnippet)
 (yas-global-mode 1)
 
-(use-package auto-complete
-  :ensure t
-  :init
-  (progn
-    (ac-config-default)
-    (global-auto-complete-mode t)))
+;; (use-package auto-complete
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (ac-config-default)
+;;     (global-auto-complete-mode t)))
 
 (use-package modern-cpp-font-lock
   :ensure t)
@@ -782,6 +1347,40 @@
            file)))
     (compile compile-command)))
 
+(use-package cc-mode
+  :bind (:map c-mode-base-map
+         ("C-c C-a" . nil)
+         ;; I want to use smartparens for () and {} instead of c-electric
+         ("(" . nil)
+         (")" . nil)
+         ("{" . nil)
+         ("}" . nil)
+         (";" . nil)
+         ("," . nil)))
+
+(use-package cmake-font-lock
+  :hook (cmake-mode . cmake-font-lock-activate))
+
+(use-package cmake-mode
+  :mode ("CMakeLists.txt" "\\.cmake\\'"))
+
+(use-package irony
+  :disabled t
+  :hook (((c++-mode c-mode objc-mode) . irony-mode-on-maybe)
+         (irony-mode . irony-cdb-autosetup-compile-options))
+  :config
+  (defun irony-mode-on-maybe ()
+    ;; avoid enabling irony-mode in modes that inherits c-mode, e.g: solidity-mode
+    (when (member major-mode irony-supported-major-modes)
+      (irony-mode 1))))
+
+(use-package company-irony
+  :after irony
+  :config (add-to-list 'company-backends 'company-irony))
+
+(use-package irony-eldoc
+  :hook (irony-mode))
+
 ;;(global-set-key [f9] 'code-compile)
 
 ;;; Racket
@@ -799,19 +1398,66 @@
 	    (define-key racket-repl-mode-map (kbd "<f5>") 'racket-run)))
 
 ;;; Java
+(use-package lsp-java
+  :hook (java-mode . java-lsp-init)
+  :config
+  ;; Use Google style formatting by default
+  (setq lsp-java-format-settings-url
+        "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml")
+  (setq lsp-java-format-settings-profile "GoogleStyle")
+
+  ;; Use 3rd party decompiler
+  (setq lsp-java-content-provider-preferred "fernflower")
+  (defun java-lsp-init ()
+    "We need to require java-lsp before loading lsp in a Java buffer.
+use-package will load java-lsp for us simply by calling this function."
+    (setq electric-indent-inhibit nil)  ; Auto-indent code after e.g. {}
+    (setq company-lsp-cache-candidates nil)  ; Company cache should be disabled for lsp-java
+    (lsp-deferred)))
+
+(use-package dap-java
+  :after lsp-java)
+
+;; For groovy and gradle support
+(use-package groovy-mode :defer t)
+
+;; Viewing Java Class files
+(defun javap-handler-real (operation args)
+  "Run the real handler without the javap handler installed."
+  (let ((inhibit-file-name-handlers
+         (cons 'javap-handler
+               (and (eq inhibit-file-name-operation operation)
+                    inhibit-file-name-handlers)))
+        (inhibit-file-name-operation operation))
+    (apply operation args)))
+
+(defun javap-handler (op &rest args)
+  "Handle .class files by putting the output of javap in the buffer."
+  (cond
+   ((eq op 'get-file-buffer)
+    (let ((file (car args)))
+      (with-current-buffer (create-file-buffer file)
+        (call-process "javap" nil (current-buffer) nil "-verbose"
+                      "-classpath" (file-name-directory file)
+                      (file-name-sans-extension (file-name-nondirectory file)))
+        (setq buffer-file-name file)
+        (setq buffer-read-only t)
+        (set-buffer-modified-p nil)
+        (goto-char (point-min))
+        (java-mode)
+        (current-buffer))))
+   ((javap-handler-real op args))))
+
+(add-to-list 'file-name-handler-alist '("\\.class$" . javap-handler))
 
 ;;; Latex
 ;; (use-package latex-preview-pane)
 
 ;;; Other Modes
-(use-package haskell-mode)
-(use-package nix-mode)
-
-;; Use hex mode for binary files
-(add-to-list 'auto-mode-alist '("\\.bin\\'" . hexl-mode))
-(add-to-list 'auto-mode-alist '("\\.dat\\'" . hexl-mode))
-(add-to-list 'auto-mode-alist '("\\.exe\\'" . hexl-mode))
-(add-to-list 'auto-mode-alist '("\\.o\\'" . hexl-mode))
+(use-package haskell-mode
+  :hook (haskell-mode . haskell-indentation-mode))
+(use-package nix-mode
+  :mode "\\.nix\\'")
 
 ;;; Terminal
 
@@ -820,10 +1466,6 @@
   (setq explicit-shell-file-name "zsh")
   ;;(setq explicit-zsh-args '())
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-
-;; (use-package parchment-theme
-;;   :ensure t
-;;   :config (load-theme 'parchment t))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
