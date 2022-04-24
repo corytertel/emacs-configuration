@@ -1,30 +1,3 @@
-;;; init.el starts here
-
-;; I don't want to use evil/vim keybinds. I want to use the default/vanilla
-;; emacs keybinds but without the strain. I'd rather press two keys over 1
-;; hard key combo that will cause me to move my hand too. I'd rather use the
-;; default/vanilla keys so new keybinds with new packages are predictable and
-;; easily usable out of the box. I do not want to be creating new easy to use
-;; keybinds for every single plugin in install. Even disregarding that, the
-;; vanilla keybinds are so extensive and thorough that redefining the keybinds
-;; will limit your functionality. Using default keybinds gets you much closer
-;; to vanilla emacs, and what emacs has to offer.
-;; I want to use the same exact default keybinds. When a keybinds is natrually
-;; C-x C-e, I want to use it. I don't want a custom keybind that is hardcoded.
-;; I just want a "control" button emulation. Just a way to simulate pressing
-;; control so it's easier to press keys. That is it. No other abstractions.
-;; No new keybinds. Just an easier way to press existing keybinds. No rebinds.
-;; No hardcoded very specific keybinds. Just ergonomic vanilla emacs.
-;; God mode offers these more ergonomic bindings through the use of
-;; control mode.
-;; Yes this requires learning a whole new style of editing, but it offers much
-;; closer integration with vanilla emacs's extensibility than evil/vim style
-;; editing could ever offer.
-;; This will require redoing xmomacs, but that is for the better.
-;; I will rebinds caps-lock to escape and use that to toggle control mode.
-;; Shift caps lock will be used for xmomacs? or maybe still alt+space? idk.
-;; I will try it and back up my config before hand encase the keybinds are too
-;; hard to use and/or too stressful on my hands.
 
 ;; Disables the startup message
 (setq inhibit-startup-message t)
@@ -150,7 +123,7 @@
 
 (setq custom-safe-themes t) ; Treat all themes as safe
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
-(add-hook 'emacs-startup-hook (lambda () (load-theme 'plain-light t)))
+(load-theme 'plain-light t)
 
 ;; Display Line numbers
 (column-number-mode)
@@ -166,13 +139,31 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Window dividers
-(setq window-divider-default-right-width 3)
-(let ((color (face-background 'mode-line)))
-  (dolist (face '(window-divider-first-pixel
-		  window-divider-last-pixel
-		  window-divider))
-    (set-face-foreground face color)))
-(window-divider-mode 1)
+;; (setq window-divider-default-right-width 3)
+;; (let ((color (face-background 'mode-line)))
+;;   (dolist (face '(window-divider-first-pixel
+;; 		  window-divider-last-pixel
+;; 		  window-divider))
+;;     (set-face-foreground face color)))
+;; (window-divider-mode 1)
+
+;; Transparent frames
+;; (dolist (frame (frame-list))
+;;   (set-frame-parameter frame 'alpha 90))
+;; (add-to-list 'default-frame-alist '(alpha . 90))
+
+;; Better Org-mode headers
+;; (set-face-attribute 'org-document-title nil
+;; 		    :weight 'extra-bold
+;; 		    :height 1.8)
+;; (set-face-attribute 'org-level-1 nil
+;; 		    :height 1.3)
+;; (set-face-attribute 'org-level-2 nil
+;; 		    :height 1.1)
+;; (set-face-attribute 'org-level-3 nil
+;; 		    :height 1.0)
+;; (set-face-attribute 'org-code nil
+;; 		    :inherit 'font-lock-string-face)
 
 ;; Doom Modeline
 (use-package all-the-icons)
@@ -248,6 +239,9 @@
 ;;       mouse-wheel-progressive-speed nil
 ;;       mouse-wheel-follow-mouse t)
 
+;; Make ESC quit prompts
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
 ;; Always confirm closing Emacs
 (setq confirm-kill-emacs #'yes-or-no-p)
 
@@ -261,140 +255,154 @@
 
 (use-package ivy
   :diminish
-  :bind (:map ivy-minibuffer-map
+  :bind (("C-s" . swiper)
+	 :map ivy-minibuffer-map
 	 ("TAB" . ivy-alt-done)
-	 ("C-f" . ivy-alt-done)
-	 ("C-n" . ivy-next-line)
-	 ("C-p" . ivy-previous-line)
+	 ("M-l" . ivy-alt-done)
+	 ("M-j" . ivy-next-line)
+	 ("M-k" . ivy-previous-line)
 	 :map ivy-switch-buffer-map
-	 ("C-p" . ivy-previous-line)
-	 ("C-f" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
+	 ("M-k" . ivy-previous-line)
+	 ("M-l" . ivy-done)
+	 ("M-d" . ivy-switch-buffer-kill)
 	 :map ivy-reverse-i-search-map
-	 ("C-p" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
+	 ("M-k" . ivy-previous-line)
+	 ("M-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
-(use-package swiper
-  :bind (("C-s" . swiper-isearch)
-	 ("C-r" . swiper-isearch-backward)))
-
-;; God-mode
-;; (use-package god-mode
-;;   :config
-;;   (global-set-key (kbd "<escape>") #'god-mode-all)
-;;   (setq god-exempt-major-modes nil)
-;;   (setq god-exempt-predicates nil)
-;;   (defun my-god-mode-update-cursor-type ()
-;;     (setq cursor-type (if (or god-local-mode buffer-read-only) 'box 'bar)))
-;;   (add-hook 'post-command-hook #'my-god-mode-update-cursor-type)
-;;   (define-key god-local-mode-map (kbd "z") #'repeat)
-;;   (define-key god-local-mode-map (kbd "i") #'god-local-mode)
-;;   (define-key god-local-mode-map (kbd "[") #'backward-paragraph)
-;;   (define-key god-local-mode-map (kbd "]") #'forward-paragraph))
-
-;; Make the cursor a bar
-(setq-default cursor-type 'bar)
+(use-package swiper)
 
 ;; Basic Keybind
+(global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
-(global-set-key (kbd "C-c t t") 'counsel-load-theme)
-(global-set-key (kbd "C-c t c") 'comment-or-uncomment-region)
-
-;; Make ESC quit prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(global-set-key (kbd "S-C-c") 'kill-ring-save)
+(global-set-key (kbd "S-C-v") 'yank)
 
 ;; Define a binding just for a certain mode
 ;;(define-key emacs-lisp-mode-map (kbd "C-x M-t") 'counsel-load-theme)
 
 ;; Declare keybinds in a more consise way
-;; (use-package general
-;;   :config
-;;   (general-create-definer cory/leader-keys
-;;     :keymaps '(normal insert visual emacs)
-;;     ;; :prefix "SPC"
-;;     :global-prefix "S-SPC")
-;;   (cory/leader-keys
-;;     ;; Search (M-x alternative)
-;;     "SPC" '(counsel-M-x :which-key "M-x")
+(use-package general
+  :config
+  (general-evil-setup t)
+  (general-create-definer cory/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "S-SPC")
+  (cory/leader-keys
+    ;; Search (M-x alternative)
+    "SPC" '(counsel-M-x :which-key "M-x")
 
-;;     "bn" '(next-buffer :which-key "next buffer")
-;;     "bp" '(previous-buffer :which-key "previous buffer")
-;;     ;; "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
+    ;; Buffers
+    "b"  '(:ignore t :which-key "buffers")
+    "bb" '(counsel-switch-buffer :which-key "switch buffer")
+    "bd" '(kill-this-buffer :which-key "kill buffer")
+    "bD" '(kill-all-buffers-and-windows :which-key "kill all buffers")
+    "be" '(eval-last-sexp :which-key "eval last expression")
+    "bE" '(eval-buffer :which-key "eval buffer")
+    ;; "bn" '(centaur-tabs-forward :which-key "next buffer")
+    ;; "bp" '(centaur-tabs-backward :which-key "previous buffer")
+    "bn" '(next-buffer :which-key "next buffer")
+    "bp" '(previous-buffer :which-key "previous buffer")
+    ;; "bg" '(centaur-tabs-counsel-switch-group :which-key "switch group")
 
-;;     ;; Git
-;;     "g"  '(:ignore t :which-key "git")
-;;     "gs" '(magit-status :which-key "git status")
+    ;; Copy
+    "c"  '(:ignore t :which-key "copy")
+    "cc" '(copy-as-format :which-key "copy (default)")
+    "cg" '(copy-as-format-github :which-key "copy (github)")
+    "ct" '(copy-as-format-markdown-table :which-key "copy (markdown table)")
+    "cm" '(copy-as-format-markdown :which-key "copy (markdown)")
+    "co" '(copy-as-format-org-mode :which-key "copy (orgmode)")
+    "cd" '(copy-as-format-slack :which-key "copy (discord)")
+    "cv" '(org-copy-visible :which-key "org copy (visible)")
 
-;;     ;; Operations
-;;     "o"  '(:ignore t :which-key "operations")
-;;     "oc" '(comment-or-uncomment-region :which-key "comment region")
-;;     "or" '(replace-string :which-key "replace string")
-;;     "os" '(swiper :which-key "search")
+    ;; Files
+    "f"  '(:ignore t :which-key "files")
+    "ff" '(counsel-find-file :which-key "find file")
+    "fr" '(rename-file :which-key "rename file")
 
-;;     ;; Projects
-;;     "p" '(projectile-command-map :which-key "projects")
+    ;; Git
+    "g"  '(:ignore t :which-key "git")
+    "gs" '(magit-status :which-key "git status")
 
-;;     ;; Saving
-;;     "s" '(save-buffer :which-key "save buffer")
+    ;; Operations
+    "o"  '(:ignore t :which-key "operations")
+    "oc" '(comment-or-uncomment-region :which-key "comment region")
+    "or" '(replace-string :which-key "replace string")
+    "os" '(swiper :which-key "search")
 
-;;     ;; Toggles
-;;     "t"  '(:ignore t :which-key "toggles")
-;;     "tf" '(treemacs :which-key "file viewer")
-;;     "ts" '(hydra-text-scale/body :which-key "scale text")
-;;     "tt" '(counsel-load-theme :which-key "choose theme")
+    ;; Projects
+    "p" '(projectile-command-map :which-key "projects")
 
-;;     ;; Windows
-;;     "w"  '(:ignore t :which-key "windows")
-;;     "wd" '(delete-window :which-key "delete window")
-;;     "wD" '(kill-buffer-and-window :which-key "delete buffer and window")
-;;     "wf" '(delete-other-windows :which-key "focus selected window")
-;;     "ws" '(split-and-follow-right :which-key "split right")
-;;     "wS" '(split-and-follow-below :which-key "split below")
-;;     "wb" '(balance-windows :which-key "balance windows")
-;;     "wr" '(hydra-window-resize/body :which-key "resize window")
+    ;; Saving
+    "s" '(save-buffer :which-key "save buffer")
 
-;;     ;; Window Management
-;;     ;; Dwm-style movement
-;;     ;; "j" '(next-window-any-frame :which-key "next window")
-;;     ;; "k" '(previous-window-any-frame :which-key "previous window")
-;;     ;; Directional movement
-;;     "k" '(windmove-up :which-key "move focus up")
-;;     "j" '(windmove-down :which-key "move focus down")
-;;     "h" '(windmove-left :which-key "move focus left")
-;;     "l" '(windmove-right :which-key "move focus right")
-;;     "K" '(buf-move-up :which-key "move window up")
-;;     "J" '(buf-move-down :which-key "move window down")
-;;     "H" '(buf-move-left :which-key "move window left")
-;;     "L" '(buf-move-right :which-key "move window right")
+    ;; Toggles
+    "t"  '(:ignore t :which-key "toggles")
+    "tf" '(treemacs :which-key "file viewer")
+    "ts" '(hydra-text-scale/body :which-key "scale text")
+    "tt" '(counsel-load-theme :which-key "choose theme")
 
-;;     ;; "u" '(evil-scroll-page-up :which-key "page up")
-;;     ;; "d" '(evil-scroll-page-down :which-key "page down"))
+    ;; Windows
+    "w"  '(:ignore t :which-key "windows")
+    "wd" '(delete-window :which-key "delete window")
+    "wD" '(kill-buffer-and-window :which-key "delete buffer and window")
+    "wf" '(delete-other-windows :which-key "focus selected window")
+    "ws" '(split-and-follow-right :which-key "split right")
+    "wS" '(split-and-follow-below :which-key "split below")
+    "wb" '(balance-windows :which-key "balance windows")
+    "wr" '(hydra-window-resize/body :which-key "resize window")
 
-;;   ;; (general-create-definer cory/racket-keys
-;;   ;;   :keymaps '(normal override insert visual emacs racket-mode-map)
-;;   ;;   :prefix "SPC"
-;;   ;;   :global-prefix "S-SPC")
+    "wk" '(windmove-up :which-key "move focus up")
+    "wj" '(windmove-down :which-key "move focus down")
+    "wh" '(windmove-left :which-key "move focus left")
+    "wl" '(windmove-right :which-key "move focus right")
+    "wK" '(buf-move-up :which-key "move window up")
+    "wJ" '(buf-move-down :which-key "move window down")
+    "wH" '(buf-move-left :which-key "move window left")
+    "wL" '(buf-move-right :which-key "move window right")
 
-;;   ;; (cory/racket-keys
-;;   ;;  ";e" '(racket-send-last-sexp :which-key "racket send expression")
-;;   ;;  )
-;;   )
+    ;; Window Management
+    ;; Dwm-style movement
+    ;; "j" '(next-window-any-frame :which-key "next window")
+    ;; "k" '(previous-window-any-frame :which-key "previous window")
+    ;; Directional movement
+    "k" '(windmove-up :which-key "move focus up")
+    "j" '(windmove-down :which-key "move focus down")
+    "h" '(windmove-left :which-key "move focus left")
+    "l" '(windmove-right :which-key "move focus right")
+    "K" '(buf-move-up :which-key "move window up")
+    "J" '(buf-move-down :which-key "move window down")
+    "H" '(buf-move-left :which-key "move window left")
+    "L" '(buf-move-right :which-key "move window right")
+
+    "u" '(evil-scroll-page-up :which-key "page up")
+    "d" '(evil-scroll-page-down :which-key "page down"))
+
+  ;; (general-create-definer cory/racket-keys
+  ;;   :keymaps '(normal override insert visual emacs racket-mode-map)
+  ;;   :prefix "SPC"
+  ;;   :global-prefix "S-SPC")
+
+  ;; (cory/racket-keys
+  ;;  ";e" '(racket-send-last-sexp :which-key "racket send expression")
+  ;;  )
+  )
 
 ;; Window management
 (use-package buffer-move
   :ensure t
   :defer t
   :bind (("C-x o" . nil)
-	 ("C-x o p" . windmove-up)
-	 ("C-x o n" . windmove-down)
-	 ("C-x o b" . windmove-left)
-	 ("C-x o f" . windmove-right)
-	 ("C-x o C-p" . buf-move-up)
-	 ("C-x o C-n" . buf-move-down)
-	 ("C-x o C-b" . buf-move-left)
-	 ("C-x o C-f" . buf-move-right))
+	 ("C-x o k" . windmove-up)
+	 ("C-x o j" . windmove-down)
+	 ("C-x o h" . windmove-left)
+	 ("C-x o l" . windmove-right)
+	 ("C-x o C-k" . buf-move-up)
+	 ("C-x o C-j" . buf-move-down)
+	 ("C-x o C-h" . buf-move-left)
+	 ("C-x o C-l" . buf-move-right))
   :custom ((focus-follows-mouse t)
 	   (mouse-autoselect-window t)))
 
@@ -420,8 +428,6 @@
     (mapc 'kill-buffer (buffer-list))
     (delete-other-windows)))
 
-(global-set-key (kbd "C-x 0") 'delete-window)
-(global-set-key (kbd "C-x 1") 'delete-other-windows)
 (global-set-key (kbd "C-x 2") 'split-and-follow-below)
 (global-set-key (kbd "C-x 3") 'split-and-follow-right)
 (global-set-key (kbd "C-x 4 q") 'kill-all-buffers-and-windows)
@@ -440,16 +446,56 @@
 	(counsel-linux-app)
       (delete-frame))))
 
+(defun cory/evil-hook ()
+  (dolist (mode '(custom-mode
+		  eshell-mode
+		  special-mode
+		  term-mode
+		  cider-repl-mode
+		  racket-repl-mode
+		  dashboard-mode))
+    (add-to-list 'evil-emacs-state-modes mode)))
+
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  (setq evil-undo-system 'undo-tree)
+  ;; (setq evil-search-module 'swiper)
+  :hook (evil-mode . cory/evil-hook)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  (define-key evil-normal-state-map (kbd "/") 'swiper)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+;; (use-package evil-collection
+;;   :after evil
+;;   :ensure t
+;;   :config
+;;   (evil-collection-init))
+(when (require 'evil-collection nil t)
+  (evil-collection-init))
+
+(evil-mode)
+
 (use-package undo-tree)
 (global-undo-tree-mode)
 
 (use-package which-key
-;;   :after god-mode
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.00000001))
-;;   (which-key-enable-god-mode-support)
 
 (use-package ivy-rich
   :init
@@ -457,8 +503,8 @@
 
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
+	 ("C-x b" . counsel-ibuffer)
 	 ("C-x C-f" . counsel-find-file)
-	 ("C-x b" . counsel-switch-buffer)
 	 :map minibuffer-local-map
 	 ("C-r" . 'counsel-minibuffer-history))
   :config
@@ -479,16 +525,16 @@
 
 (defhydra hydra-text-scale (:timeout 4)
   "scale text"
-  ("n" text-scale-increase "in")
-  ("p" text-scale-decrease "out")
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
   ("q" nil "finished" :exit t))
 
 (defhydra hydra-window-resize (:timeout 4)
   "resize window"
-  ("p" shrink-window 5 "shrink vertically")
-  ("n" enlarge-window 5 "enlarge vertically")
-  ("b" shrink-window-horizontally 5 "shrink horizontally")
-  ("f" enlarge-window-horizontally 5 "enlarge horizontally")
+  ("k" shrink-window 5 "shrink vertically")
+  ("j" enlarge-window 5 "enlarge vertically")
+  ("h" shrink-window-horizontally 5 "shrink horizontally")
+  ("l" enlarge-window-horizontally 5 "enlarge horizontally")
   ("q" nil "finished" :exit t))
 
 (use-package projectile
@@ -506,12 +552,44 @@
   :config (counsel-projectile-mode))
 
 (use-package magit
-  :bind (("C-c g s" . magit-status))
   :commands (magit-status magit-get-current-branch)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+;; (use-package evil-magit
+;;   :after magit)
+
 ;; (use-package forge)
+
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t)
+;;   (setq centaur-tabs-style "bar")
+;;   (setq centaur-tabs-height 72)
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-plain-icons nil)
+;;   (setq centaur-tabs-gray-out-icons 'buffer)
+;;   (setq centaur-tabs-set-bar 'under)
+;;   (setq x-underline-at-descent-line t)
+;;   (setq centaur-tabs-set-close-button t)
+;;   (setq centaur-tabs-set-modified-marker t)
+;;   (setq centaur-tabs-adjust-buffer-order t)
+;;   (setq centaur-tabs-label-fixed-length 10) ; 0 is dynamic
+;;   (setq centaur-tabs-cycle-scope 'tabs)
+;;   (centaur-tabs-headline-match)
+;;   (centaur-tabs-change-fonts "VictorMono Nerd Font" 100)
+;;   (centaur-tabs-enable-buffer-reordering)
+;;   (centaur-tabs-mode t)
+;;   :init
+;;   (setq centaur-tabs-enable-key-bindings t)
+;;   :bind
+;;   ;; Vim-like tab changing
+;;   (:map evil-normal-state-map
+;; 	("g t" . centaur-tabs-forward)
+;; 	("g T" . centaur-tabs-backward))
+;;   ("C-<prior>" . centaur-tabs-backward)
+;;   ("C-<next>" . centaur-tabs-forward))
 
 ;;; IDE Features
 
@@ -543,11 +621,25 @@
 (setq-default fill-column 80)
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
+;; Make the cursor a bar
+(setq-default cursor-type 'bar)
+
 ;; Turn ^L into pretty lines
 (use-package page-break-lines
   :ensure t
   :defer t
   :hook (after-init . global-page-break-lines-mode))
+
+;; Highlight matching parentheses
+;; (use-package paren
+;;   :defer t
+;;   :init
+;;   (show-paren-mode 1)
+;;   :custom-face (show-paren-match
+;; 		((t (:weight extra-bold
+;; 			     :underline t))))
+;;   :custom ((show-paren-style 'parentheses)
+;; 	   (show-paren-delay 0.00000001)))
 
 ;; Rainbow delimiters
 (use-package rainbow-delimiters
@@ -599,14 +691,16 @@
          ("C-M-d" . sp-down-sexp)
          ("C-M-p" . sp-backward-down-sexp)
          ("C-M-n" . sp-up-sexp)
-         ;; ("C-w" . whole-line-or-region-sp-kill-region)
+         ("C-w" . whole-line-or-region-sp-kill-region)
          ("M-s" . sp-splice-sexp) ;; depth-changing commands
          ("M-r" . sp-splice-sexp-killing-around)
          ("M-(" . sp-wrap-round)
          ("C-)" . sp-forward-slurp-sexp) ;; barf/slurp
          ("C-<right>" . sp-forward-slurp-sexp)
+         ("M-0" . sp-forward-slurp-sexp)
          ("C-}" . sp-forward-barf-sexp)
          ("C-<left>" . sp-forward-barf-sexp)
+         ("M-9" . sp-forward-barf-sexp)
          ("C-(" . sp-backward-slurp-sexp)
          ("C-M-<left>" . sp-backward-slurp-sexp)
          ("C-{" . sp-backward-barf-sexp)
@@ -685,14 +779,6 @@
 
 ;; Copy text as Discord/GitHub/etc formatted code
 (use-package copy-as-format
-  :bind
-  (("C-c c c" . copy-as-format)
-   ("C-c c g" . copy-as-format-github)
-   ("C-c c t" . copy-as-format-markdown-table)
-   ("C-c c m" . copy-as-format-markdown)
-   ("C-c c o" . copy-as-format-org-mode)
-   ("C-c c d" . copy-as-format-slack)
-   ("C-c c v" . org-copy-visible))
   :config
   (setq copy-as-format-default "slack")
   (defun copy-as-format--markdown-table (text _multiline)
@@ -1405,6 +1491,11 @@ use-package will load java-lsp for us simply by calling this function."
   ;; Truncate buffer for performance
   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 
+  ;; Bind some useful keys for evil-mode
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+
   (setq eshell-history-size 10000
 	eshell-buffer-maximum-lines 10000
 	eshell-hist-ignoredups t
@@ -1428,7 +1519,7 @@ use-package will load java-lsp for us simply by calling this function."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(eshell-git-prompt eterm-256color dap-java ob-clojure elisp-mode subr-x forge magit paredit clojure-mode-extra-font-locking counsel-projectile projectile yasnippet which-key use-package undo-tree rainbow-delimiters parchment-theme nix-mode modern-cpp-font-lock lsp-treemacs ivy-rich helpful haskell-mode general flycheck doom-modeline cpp-auto-include counsel company command-log-mode cider centaur-tabs auto-complete))
+   '(eshell-git-prompt eterm-256color dap-java ob-clojure elisp-mode subr-x forge evil-magit magit paredit clojure-mode-extra-font-locking counsel-projectile projectile yasnippet which-key use-package undo-tree rainbow-delimiters parchment-theme nix-mode modern-cpp-font-lock lsp-treemacs ivy-rich helpful haskell-mode general flycheck evil doom-modeline cpp-auto-include counsel company command-log-mode cider centaur-tabs auto-complete))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
