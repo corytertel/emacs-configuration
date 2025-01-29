@@ -4,6 +4,8 @@
 
 (require 'evil)
 (require 'evil-common)
+(require 'evil-ex)
+(require 'evil-vars)
 
 ;; The goal of this is to integrate : and M-x to be one.
 ;; Both emacs interactive commands will work, as well as vim commands.
