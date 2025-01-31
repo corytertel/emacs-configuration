@@ -1,5 +1,6 @@
 
 emacs:
+	mkdir -p ~/.emacs.d/
 	cp --verbose *.el ~/.emacs.d/
 
 clean:
