@@ -5,6 +5,8 @@
 (require 'evil)
 (evil-mode 1)
 
+(load "~/.emacs.d/init-vim-utils.el")
+
 ;;; Evil M-x
 
 (load "~/.emacs.d/evil-M-x.el")
@@ -71,20 +73,21 @@ next VCOUNT - 1 lines below the current one."
                    vcount)))
   (evil-insert-state 1))
 
-  ;; Make :q not quit emacs
-  (global-set-key [remap evil-quit] #'kill-buffer-and-window)
-  (global-set-key [remap evil-save-and-close] #'cory/kill-buffer-and-window-and-save)
+;; Remap :q to not quit emacs or kill windows
+(global-set-key [remap evil-quit] #'evil-kill-this-buffer)
+(global-set-key [remap evil-save-and-close] #'evil-save-and-kill-this-buffer)
+(global-set-key [remap evil-save-modified-and-close] #'evil-save-modified-and-kill-this-buffer)
 
-  ;; Make : trigger M-x instead
-  (define-key evil-motion-state-map (kbd ":") #'evil-execute-extended-command)
-  ;; (define-key evil-motion-state-map (kbd ":")
-  ;;   (lambda ()
-  ;;     (interactive)
-  ;;     ;; You will want vertico-preselect to be 'prompt for this command, or else you it
-  ;;     ;; will be unintutive to submit evil-commands
-  ;;     (let ((vertico-preselect 'prompt))
-  ;;       (call-interactively #'evil-execute-extended-command))))
-  (define-key evil-motion-state-map (kbd "C-w :") #'execute-extended-command) 
+;; Make : trigger M-x instead
+(define-key evil-motion-state-map (kbd ":") #'evil-execute-extended-command)
+;; (define-key evil-motion-state-map (kbd ":")
+;;   (lambda ()
+;;     (interactive)
+;;     ;; You will want vertico-preselect to be 'prompt for this command, or else you it
+;;     ;; will be unintutive to submit evil-commands
+;;     (let ((vertico-preselect 'prompt))
+;;       (call-interactively #'evil-execute-extended-command))))
+(define-key evil-motion-state-map (kbd "C-w :") #'execute-extended-command) 
 
 ;;; Use devil as "leader key"
 
@@ -113,12 +116,11 @@ next VCOUNT - 1 lines below the current one."
 			   ("%k %k <escape>" . ignore)
 			   ("%k <escape>" . ignore)))
 
-;;; Escape as keyboard-quit
-
+;; Escape as keyboard-quit
 (define-key global-map [escape] #'keyboard-quit)
 (define-key minibuffer-mode-map [escape] #'abort-minibuffers)
-;; (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-;; (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+
+;; Unbind keys which do actions which should be preferrably done the
+;; vim way.
+(global-set-key (kbd "C-x k") nil) ; :q
+(global-set-key (kbd "C-x C-s") nil) ; :w
