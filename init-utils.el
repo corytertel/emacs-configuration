@@ -11,5 +11,5 @@
   `(let* ((str-name (symbol-name ,name))
           (dir (concat user-emacs-directory str-name)))
      (unless (file-exists-p dir)
-       (async-shell-command (concat "git clone " ,url " --depth 1 --quiet " dir)))
+       (shell-command (concat "git clone " ,url " --depth 1 --quiet " dir)))
      (add-to-list 'load-path dir)))
