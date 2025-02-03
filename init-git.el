@@ -1,0 +1,3 @@
+
+(pkg 'magit)
+(require 'magit)
