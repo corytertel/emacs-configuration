@@ -1,6 +1,10 @@
 
 ;;; Quality of life changes in emacs
 
+;; Turn off bell
+(setq visible-bell nil
+      ring-bell-function #'ignore)
+
 ;; Write backup files to backup directory instead of editing directory
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
@@ -78,3 +82,23 @@
 ;; 	 'local-map (purecopy (make-mode-line-mouse-map
 ;; 			       'mouse-1 #'mode-line-toggle-modified))
 ;; 	 'mouse-face 'mode-line-highlight)))
+
+;; Select only "real buffers" when toggling between buffers
+(set-frame-parameter (selected-frame) 'buffer-predicate
+		     (lambda (buf)
+		       (let ((name (buffer-name buf)))
+			 (not (or (string-prefix-p "*" name)
+			       (eq 'dired-mode (buffer-local-value 'major-mode buf)))))))
+
+(global-set-key (kbd "<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "C-<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "M-<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "C-M-<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "S-<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "C-S-<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "M-S-<f1>") #'mode-line-other-buffer)
+(global-set-key (kbd "C-M-S-<f1>") #'mode-line-other-buffer)
+
+;; Suppress async-shell-command popup
+(add-to-list 'display-buffer-alist
+	     '("\\*Async Shell Command\\*.*" display-buffer-no-window))
