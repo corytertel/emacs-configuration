@@ -29,7 +29,7 @@
     (backward-delete-char 1)))
 
 (define-key minibuffer-local-completion-map
-  (kbd "DEL") #'kill-dir-or-char)
+            (kbd "DEL") #'kill-dir-or-char)
 
 ;; Position and format of completions window
 (add-to-list 'display-buffer-alist
@@ -38,57 +38,37 @@
                (window-parameters . ((mode-line-format . none)))))
 
 ;; Mode line colors
-;; (setq-default
- ;; mode-line-format
- ;; '("%e" mode-line-front-space
-   ;; (:propertize
-    ;; ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote)
-    ;; display
-    ;; (min-width
-     ;; (5.0)))
-   ;; mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position evil-mode-line-tag
-   ;; (vc-mode vc-mode)
-   ;; "  " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+(set-face-attribute 'mode-line nil
+                    :foreground "black"
+                    :background "#ccccff"
+                    :box '(:line-width 3 :color "#ccccff" :style nil)
+                    :overline nil
+                    :underline nil)
 
+(set-face-attribute 'mode-line-inactive nil
+                    :foreground "black"
+                    :background "gray90"
+                    :box '(:line-width 3 :color "gray90" :style nil)
+                    :overline nil
+                    :underline nil)
 
-(defface modeline-narrow-face
-  `((t (:foreground "#141404" :background "#ed8f23")))
-  "Todo/fixme highlighting."
-  :group 'faces)
-
-(defface modeline-read-only-face
-  `((t (:foreground "#141404" :background "#9feaae")))
-  "Read-only buffer highlighting."
-  :group 'faces)
-
-(defface modeline-modified-face
-  `((t (:foreground "#d8d8d8" :background "#e60909")))
-  "Modified buffer highlighting."
-  :group 'faces)
-
-;; (setq-default
-;;  mode-line-modified
-;;  '(list (propertize
-;; 	 "%1*"
-;; 	 'help-echo 'mode-line-read-only-help-echo
-;; 	 'local-map (purecopy (make-mode-line-mouse-map
-;; 			       'mouse-1
-;; 			       #'mode-line-toggle-read-only))
-;; 	 'mouse-face 'mode-line-highlight)
-;; 	(propertize
-;; 	 "%1+"
-;;          'face 'modeline-modified-face
-;; 	 'help-echo 'mode-line-modified-help-echo
-;; 	 'local-map (purecopy (make-mode-line-mouse-map
-;; 			       'mouse-1 #'mode-line-toggle-modified))
-;; 	 'mouse-face 'mode-line-highlight)))
+;; NOTE need to be careful with :eval in modeline
+(setq-default
+ mode-line-format
+ (list
+  " "
+  '(:eval (char-to-string (upcase (string-to-char (symbol-name evil-state)))))
+  " "
+  '(:eval (if (buffer-modified-p)
+              (propertize "%b" 'face 'font-lock-warning-face)
+            "%b"))))
 
 ;; Select only "real buffers" when toggling between buffers
-(set-frame-parameter (selected-frame) 'buffer-predicate
-		     (lambda (buf)
-		       (let ((name (buffer-name buf)))
-			 (not (or (string-prefix-p "*" name)
-			       (eq 'dired-mode (buffer-local-value 'major-mode buf)))))))
+;; (set-frame-parameter (selected-frame) 'buffer-predicate
+;;                      (lambda (buf)
+;;                        (let ((name (buffer-name buf)))
+;;                          (not (or (string-prefix-p "*" name)
+;;                                (eq 'dired-mode (buffer-local-value 'major-mode buf)))))))
 
 (global-set-key (kbd "<f1>") #'mode-line-other-buffer)
 (global-set-key (kbd "C-<f1>") #'mode-line-other-buffer)
@@ -101,4 +81,4 @@
 
 ;; Suppress async-shell-command popup
 (add-to-list 'display-buffer-alist
-	     '("\\*Async Shell Command\\*.*" display-buffer-no-window))
+             '("\\*Async Shell Command\\*.*" display-buffer-no-window))
