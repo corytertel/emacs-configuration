@@ -89,6 +89,9 @@
 ;; Git
 (load "~/.emacs.d/init-git.el")
 
+;; Eshell
+(load "~/.emacs.d/init-eshell.el")
+
 ;; Web dev
 (load "~/.emacs.d/init-web-dev.el")
 
