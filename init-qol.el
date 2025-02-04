@@ -40,8 +40,8 @@
 ;; Mode line colors
 (set-face-attribute 'mode-line nil
                     :foreground "black"
-                    :background "#ccccff"
-                    :box '(:line-width 3 :color "#ccccff" :style nil)
+                    :background "#99dd99"
+                    :box '(:line-width 3 :color "#99dd99" :style nil)
                     :overline nil
                     :underline nil)
 
