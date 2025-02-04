@@ -11,6 +11,7 @@
             (setq-local display-line-numbers nil)))
 
 ;; Eshell faces
+(require 'em-ls)
 (set-face-attribute 'eshell-ls-directory nil
                     :foreground "cyan"
                     :inherit nil)
