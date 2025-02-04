@@ -21,7 +21,7 @@
 ;; Relative line numbers
 (global-display-line-numbers-mode 1)
 ;; (setq display-line-numbers 'relative)
-;; (setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type 'relative)
 
 ;; Cursor
 (setq evil-default-cursor '(box "black"))
