@@ -124,3 +124,7 @@ next VCOUNT - 1 lines below the current one."
 ;; vim way.
 (global-set-key (kbd "C-x k") nil) ; :q
 (global-set-key (kbd "C-x C-s") nil) ; :w
+
+;; Vim-like scroll behavior
+(setq scroll-step 1)
+(setq scroll-margin 1)

@@ -14,3 +14,6 @@
 (pkg-git 'lsp-bridge "https://github.com/manateelazycat/lsp-bridge")
 (require 'lsp-bridge)
 (global-lsp-bridge-mode)
+
+;; Enable tooltip diagnostics on hover
+(setq lsp-bridge-enable-hover-diagnostic t)

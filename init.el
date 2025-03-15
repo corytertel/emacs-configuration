@@ -43,9 +43,17 @@
 ;;; rebound to a different action.
 
 ;;; Packages to add in the future (try to prioritize built-in packages):
+;;; - lsp-bridge: hover diagnostic, completion binds, binds in lsp-bridge-diagnostic-list (evil integration)
+;;; - execute elisp in ex
+;;; - look into apheleia for auto-formatting
+;;; - java
+;;; - python w/ tree-sitter
+;;; - matching ()
+;;; - snippets
+;;; - evil-sexp
 ;;; - use-package w/ lazy loading
 ;;; - Magit
-;;; - in emacs terminal
+;;; - eshell
 ;;; - tramp
 ;;; - use dired
 ;;; - embark + wgrep (and rg.el)

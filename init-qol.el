@@ -82,3 +82,10 @@
 ;; Suppress async-shell-command popup
 (add-to-list 'display-buffer-alist
              '("\\*Async Shell Command\\*.*" display-buffer-no-window))
+
+;; Disable scroll acceleration
+(setq mouse-wheel-progressive-speed nil)
+
+;; Speed up mouse scroll
+(setq mouse-wheel-scroll-amount
+      '(2 ((shift) . hscroll) ((meta)) ((control meta) . global-text-scale) ((control) . text-scale)))
